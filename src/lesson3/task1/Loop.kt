@@ -79,6 +79,7 @@ fun digitNumber(n: Int): Int {
     var count = 0
     var digit = n
     if (digit == 0) return ++count
+    if (digit < 0) digit *= (-1)
     while (digit > 0) {
         count++
         digit /= 10
@@ -170,7 +171,7 @@ fun collatzSteps(x: Int): Int {
 fun lcm(m: Int, n: Int): Int {
     var k = 1
     while (k <= m * n) {
-        if (k % m == 0 && k % n == 0) break
+        if (k % m == 0 && k % n == 0) return k
         else k++
     }
     return k
@@ -364,7 +365,7 @@ fun fibSequenceDigit(n: Int): Int {
         digit = fib(count1)
         argument = digit
         if (digit < 10) count++ else {
-            while (argument > 0 || count <= n) {
+            while (argument > 0) {
                 if (argument / 10 == 0) {
                     count++
                     break
