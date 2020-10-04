@@ -214,7 +214,7 @@ class Tests {
         assertEquals(0.0, sin(100 * PI, 1e-5), 1e-5)
         assertNotEquals(kotlin.math.sin(1.0), sin(1.0, 1.0))
         assertNotEquals(kotlin.math.sin(-0.5), sin(-0.5, 1.0))
-        assertNotEquals(0.0, sin(-18.84955592153876, 1e-10))
+        assertEquals(0.0, sin(-18.84955592153876, 1e-10))
 
     }
 
@@ -228,7 +228,7 @@ class Tests {
         assertEquals(1.0, cos(100 * PI, 1e-5), 1e-5)
         assertNotEquals(kotlin.math.cos(1.0), cos(1.0, 1.0))
         assertNotEquals(kotlin.math.cos(0.5), cos(-0.5, 1.0))
-        assertNotEquals(kotlin.math.cos(1.0), cos(-18.84955592153876, 1e-10))
+        assertEquals(1.0, cos(-18.84955592153876, 1e-10))
     }
 
     @Test
@@ -252,5 +252,6 @@ class Tests {
         assertEquals(5, fibSequenceDigit(14))
         assertEquals(2, fibSequenceDigit(20))
         assertEquals(3, fibSequenceDigit(234))
+        assertEquals(9, fibSequenceDigit(116))
     }
 }

@@ -169,11 +169,13 @@ fun collatzSteps(x: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    var k = 1
-    while (k <= m * n) {
+    var k = 0
+    val min1 = minDivisor(m)
+    val min2 = minDivisor(n)
+    do {
+        k += if (min1 == min2) min1 else min1 * min2
         if (k % m == 0 && k % n == 0) return k
-        else k++
-    }
+    } while (k <= m * n)
     return k
 }
 
@@ -276,15 +278,11 @@ fun sin(x: Double, eps: Double): Double {
     var result = 0.0
     var argument = 0.0
     val digit = x % (2 * PI)
-    if (x <= eps) return x
+    if (abs(x) <= eps) return x
     do {
         result += argument
         argument = (-1.0).pow(count) * digit.pow(2 * count + 1) / factorial(2 * count + 1)
         count++
-        //    println(count)
-        //println(argument)
-        //println(eps)
-        //    println(result)
     } while (abs(argument) > eps)
     return result
 }
@@ -303,7 +301,7 @@ fun cos(x: Double, eps: Double): Double {
     var result = 0.0
     var argument = 0.0
     val digit = x % (2 * PI)
-    if (x <= eps) return x + 1
+    if (abs(x) <= eps) return x + 1
     do {
         result += argument
         argument = (-1.0).pow(count) * digit.pow(2 * count) / factorial(2 * count)
@@ -360,7 +358,7 @@ fun fibSequenceDigit(n: Int): Int {
     var count1 = 1
     var count = 1
     var digit: Int
-    var argument = 1
+    var argument: Int
     while (count <= n) {
         digit = fib(count1)
         argument = digit
@@ -377,7 +375,7 @@ fun fibSequenceDigit(n: Int): Int {
         }
         count1++
     }
-    return if (count - 1 == n) (argument % 10)
+    return if (count - 1 == n) (fib(count1 - 1) % 10)
     else {
         argument = fib(count1 - 1)
         while (count - 1 != n) {
