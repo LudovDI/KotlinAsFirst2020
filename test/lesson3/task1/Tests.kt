@@ -213,6 +213,8 @@ class Tests {
         assertEquals(0.0, sin(100 * PI, 1e-5), 1e-5)
         assertNotEquals(kotlin.math.sin(1.0), sin(1.0, 1.0))
         assertNotEquals(kotlin.math.sin(-0.5), sin(-0.5, 1.0))
+        assertNotEquals(0.017452403307423047, sin(-18.832102629018816, 1e-10))
+
     }
 
     @Test
