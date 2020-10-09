@@ -5,7 +5,7 @@ package lesson2.task1
 import lesson1.task1.discriminant
 import kotlin.math.max
 import kotlin.math.sqrt
-
+import kotlin.math.abs
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
 // Максимальное количество баллов = 6
 // Рекомендуемое количество баллов = 5
@@ -69,7 +69,7 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
 fun ageDescription(age: Int): String = when {
-    (age < 0 || age > 200) -> "несуществующий возраст $age"
+    (age < 0 || age > 200) -> throw Exception("несуществующий возраст $age")
     (age % 100 in 5..20 || age % 10 == 0 || age % 10 in 5..9) -> "$age лет"
     (age % 10 == 1) -> "$age год"
     else -> "$age года"
@@ -131,7 +131,7 @@ fun rookOrBishopThreatens(
     bishopX: Int, bishopY: Int
 ): Int {
     var flag = 0
-    if (kotlin.math.abs(kingX - bishopX) == kotlin.math.abs(kingY - bishopY)) flag += 2
+    if (abs(kingX - bishopX) == abs(kingY - bishopY)) flag += 2
     if (kingX == rookX || kingY == rookY) flag += 1
     return flag
 }
@@ -145,9 +145,9 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int = when {
-    (a > b + c || b > a + c || c > a + b) -> -1
-    (a * a > b * b + c * c || b * b > a * a + c * c || c * c > a * a + b * b) -> 2
-    (a * a == b * b + c * c || b * b == a * a + c * c || c * c == a * a + b * b) -> 1
+    a > b + c || b > a + c || c > a + b -> -1
+    a * a > b * b + c * c || b * b > a * a + c * c || c * c > a * a + b * b -> 2
+    a * a == b * b + c * c || b * b == a * a + c * c || c * c == a * a + b * b -> 1
     else -> 0
 }
 
@@ -160,9 +160,9 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = when {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = when {
-    (b >= d && a <= c) -> d - c
-    (d >= b && c <= a) -> b - a
-    (c in a..b && d > b) -> b - c
-    (a in c..d && b > d) -> d - a
+    b >= d && a <= c -> d - c
+    d >= b && c <= a -> b - a
+    c in a..b && d > b -> b - c
+    a in c..d && b > d -> d - a
     else -> -1
 }

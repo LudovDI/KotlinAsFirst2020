@@ -169,7 +169,7 @@ fun collatzSteps(x: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    var k = 0
+    var k = if (m == 1 && n == 1) 1 else 0
     val min1 = minDivisor(m)
     val min2 = minDivisor(n)
     do {
