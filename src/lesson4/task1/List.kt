@@ -11,6 +11,8 @@ import kotlin.math.pow
 // Рекомендуемое количество баллов = 8
 // Вместе с предыдущими уроками = 24/33
 
+fun isPrime(n: Int) = n >= 2 && (2..n / 2).all { n % it != 0 }
+
 /**
  * Пример
  *
@@ -134,15 +136,7 @@ fun abs(v: List<Double>): Double {
  *
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
-fun mean(list: List<Double>): Double {
-    var result = 0.0
-    var count = 0
-    for (element in list) {
-        result += element
-        count++
-    }
-    return if (count == 0) 0.0 else result / count
-}
+fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() / list.size
 
 /**
  * Средняя (3 балла)
@@ -153,7 +147,7 @@ fun mean(list: List<Double>): Double {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
-    val arithmeticAverage = list.sum() / list.size
+    val arithmeticAverage = mean(list)
     for (i in 0 until list.size)
         list[i] -= arithmeticAverage
     return list
@@ -220,21 +214,14 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  */
 fun factorize(n: Int): List<Int> {
     val result = mutableListOf<Int>()
-    var flag = 0
     var digit = n
     while (digit > 1)
-        for (i in 2..digit) {
-            for (j in 2 until i)
-                if (i % j == 0) flag++
-            if (digit % i == 0 && (flag == 0 || i == 2)) {
+        for (i in 2..digit)
+            if (digit % i == 0 && isPrime(i)) {
                 result.add(i)
                 digit /= i
-                flag = 0
-                break
             }
-            flag = 0
-        }
-    return result
+    return result.sorted()
 }
 
 /**
@@ -246,21 +233,15 @@ fun factorize(n: Int): List<Int> {
  */
 fun factorizeToString(n: Int): String {
     val list = mutableListOf<Int>()
-    var flag = 0
     var digit = n
     while (digit > 1)
-        for (i in 2..digit) {
-            for (j in 2 until i)
-                if (i % j == 0) flag++
-            if (digit % i == 0 && (flag == 0 || i == 2)) {
+        for (i in 2..digit)
+            if (digit % i == 0 && isPrime(i)) {
                 list.add(i)
                 digit /= i
-                flag = 0
-                break
             }
-            flag = 0
-        }
-    return list.joinToString(separator = "*", postfix = "")
+    val newList = list.sorted()
+    return newList.joinToString(separator = "*", postfix = "")
 }
 
 /**

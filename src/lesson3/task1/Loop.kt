@@ -78,8 +78,8 @@ fun digitCountInNumber(n: Int, m: Int): Int =
 fun digitNumber(n: Int): Int {
     var count = 0
     var digit = n
-    if (digit == 0) return ++count
-    if (digit < 0) digit *= (-1)
+    if (digit == 0) return 1
+    if (digit < 0) digit = abs(digit)
     while (digit > 0) {
         count++
         digit /= 10
@@ -94,10 +94,10 @@ fun digitNumber(n: Int): Int {
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
 fun fib(n: Int): Int {
-    var first = 1
-    var second = 1
     return if (n <= 2) 1
     else {
+        var first = 1
+        var second = 1
         for (i in 3..n) {
             first += second
             second = first - second
@@ -113,11 +113,11 @@ fun fib(n: Int): Int {
  */
 fun minDivisor(n: Int): Int {
     var count = 2
-    while (count <= n) {
+    while (count <= sqrt(n.toDouble()).toInt()) {
         if (n % count == 0) return count
         else count++
     }
-    return 0
+    return n
 }
 
 /**
@@ -127,12 +127,12 @@ fun minDivisor(n: Int): Int {
  */
 fun maxDivisor(n: Int): Int {
     var count = n - 1
-    while (count > 0) {
+    while (sqrt(count.toDouble()).toInt() > 0) {
         if (n % count == 0) {
             return count
         } else count--
     }
-    return count
+    return n
 }
 
 /**
@@ -169,9 +169,9 @@ fun collatzSteps(x: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    var k = if (m == 1 && n == 1) 1 else 0
-    val min1 = minDivisor(m)
-    val min2 = minDivisor(n)
+    var k = if (m == 1 && n == 1) return 1 else 0
+    val min1 = if (m == 1) 1 else minDivisor(m)
+    val min2 = if (n == 1) 1 else minDivisor(n)
     do {
         k += if (min1 == min2) min1 else min1 * min2
         if (k % m == 0 && k % n == 0) return k
@@ -237,15 +237,7 @@ fun revert(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean {
-    var first = n
-    var second = 0
-    while (first > 0) {
-        second = second * 10 + first % 10
-        first /= 10
-    }
-    return second == n
-}
+fun isPalindrome(n: Int): Boolean = n == revert(n)
 
 /**
  * Средняя (3 балла)
@@ -320,25 +312,18 @@ fun cos(x: Double, eps: Double): Double {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var count = 1
-    var digit = 1.0
-    var sequence = 0.0
+    var count = 0
+    var digit = 0
     var argument: Int
-    while (count <= n) {
-        sequence = digit * digit
-        if (sequence < 10) count++ else {
-            argument = (digit * digit).toInt()
-            while (argument > 0) {
-                argument /= 10
-                count++
-            }
-        }
+    while (count < n) {
         digit++
+        argument = digit * digit
+        count += digitNumber(argument)
     }
-    return if (count - 1 == n) (sequence % 10).toInt()
+    return if (count == n) digit * digit % 10
     else {
-        argument = sequence.toInt()
-        while (count - 1 != n) {
+        argument = digit * digit
+        while (count != n) {
             count--
             argument /= 10
         }
@@ -355,30 +340,17 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    var count1 = 1
-    var count = 1
-    var digit: Int
+    var count = 0
+    var digit = 0
     var argument: Int
-    while (count <= n) {
-        digit = fib(count1)
-        argument = digit
-        if (digit < 10) count++ else {
-            while (argument > 0) {
-                if (argument / 10 == 0) {
-                    count++
-                    break
-                } else {
-                    count++
-                    argument /= 10
-                }
-            }
-        }
-        count1++
+    while (count < n) {
+        digit++
+        count += digitNumber(fib(digit))
     }
-    return if (count - 1 == n) (fib(count1 - 1) % 10)
+    return if (count == n) (fib(digit) % 10)
     else {
-        argument = fib(count1 - 1)
-        while (count - 1 != n) {
+        argument = fib(digit)
+        while (count != n) {
             count--
             argument /= 10
         }
