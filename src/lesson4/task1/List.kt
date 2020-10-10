@@ -297,7 +297,65 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    var result = ""
+    var digit = n
+
+    while (digit >= 1000) {
+        result += "M"
+        digit -= 1000
+    }
+    while (digit >= 900) {
+        result += "CM"
+        digit -= 900
+    }
+    while (digit >= 500) {
+        result += "D"
+        digit -= 500
+    }
+    while (digit >= 400) {
+        result += "CM"
+        digit -= 400
+    }
+    while (digit >= 100) {
+        result += "C"
+        digit -= 100
+    }
+    while (digit >= 90) {
+        result += "XC"
+        digit -= 90
+    }
+    while (digit >= 50) {
+        result += "L"
+        digit -= 50
+    }
+    while (digit >= 40) {
+        result += "XL"
+        digit -= 40
+    }
+    while (digit >= 10) {
+        result += "X"
+        digit -= 10
+    }
+    while (digit >= 9) {
+        result += "IX"
+        digit -= 9
+    }
+    while (digit >= 5) {
+        result += "V"
+        digit -= 5
+    }
+    while (digit >= 4) {
+        result += "IV"
+        digit -= 4
+    }
+    while (digit >= 1) {
+        result += "I"
+        digit -= 1
+    }
+
+    return result
+}
 
 /**
  * Очень сложная (7 баллов)
@@ -306,4 +364,56 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+fun russian(n: Int): String {
+    var result: String
+    val count: Int = n / 1000
+
+    if (count > 0) {
+        result = toText(count, true)
+        result += toText(n - count * 1000, false)
+    } else result = toText(n - count * 1000, false)
+    return result.dropLast(1)
+}
+
+fun toText(count: Int, check: Boolean): String {
+    var text = ""
+    val char1: Int = count / 100
+    val char2: Int = count / 10 - char1 * 10
+    val char3: Int = count % 10
+
+    val hundred = arrayOf(
+        "сто", "двести", "триста", "четыреста",
+        "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"
+    )
+    val decades = arrayOf(
+        "двадцать", "тридцать", "сорок", "пятьдесят",
+        "шестьдесят", "семьдесят", "восемьдесят", "девяносто"
+    )
+    val unit = arrayOf(
+        "один", "два", "три", "четыре", "пять", "шесть", "семь",
+        "восемь", "девять", "десять", "одиннацать", "двенадцать",
+        "тринадцать", "четырнадцать", "пятьнадцать", "шестьнадцать",
+        "семьнадцать", "восемьнадцать", "девятнадцать"
+    )
+
+    if (check) {
+        unit[0] = "одна"
+        unit[1] = "две"
+    }
+
+    if (char1 > 0) text = hundred[char1 - 1] + " "
+    if (char2 == 1) text = text + unit[9 + char3] + " " else {
+        if (char2 >= 2) text = text + decades[char2 - 2] + " "
+        if (char3 > 0) text = text + unit[char3 - 1] + " "
+    }
+
+    if (check) {
+        when (char3) {
+            1 -> text += "тысяча "
+            2, 3, 4 -> text += "тысячи "
+            0, 5, 6, 7, 8, 9 -> text += "тысяч "
+        }
+    }
+
+    return text
+}

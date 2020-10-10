@@ -127,12 +127,12 @@ fun minDivisor(n: Int): Int {
  */
 fun maxDivisor(n: Int): Int {
     var count = n - 1
-    while (sqrt(count.toDouble()).toInt() > 0) {
+    while (count >= sqrt(n.toDouble()).toInt()) {
         if (n % count == 0) {
             return count
         } else count--
     }
-    return n
+    return 1
 }
 
 /**
