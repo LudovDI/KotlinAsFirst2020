@@ -6,6 +6,7 @@ import lesson1.task1.discriminant
 import kotlin.math.max
 import kotlin.math.sqrt
 import kotlin.math.abs
+
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
 // Максимальное количество баллов = 6
 // Рекомендуемое количество баллов = 5
@@ -144,11 +145,16 @@ fun rookOrBishopThreatens(
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = when {
-    a > b + c || b > a + c || c > a + b -> -1
-    a * a > b * b + c * c || b * b > a * a + c * c || c * c > a * a + b * b -> 2
-    a * a == b * b + c * c || b * b == a * a + c * c || c * c == a * a + b * b -> 1
-    else -> 0
+fun triangleKind(a: Double, b: Double, c: Double): Int {
+    if (a > b + c || b > a + c || c > a + b) return -1
+    val expression = if (a >= b && a >= c) a * a - (b * b + c * c) else
+        if (b >= c) b * b - (a * a + c * c)
+        else c * c - (a * a + b * b)
+    return when {
+        expression > 0.0 -> 2
+        expression == 0.0 -> 1
+        else -> 0
+    }
 }
 
 /**

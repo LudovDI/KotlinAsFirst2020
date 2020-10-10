@@ -330,6 +330,7 @@ fun squareSequenceDigit(n: Int): Int {
         argument % 10
     }
 }
+
 /**
  * Сложная (5 баллов)
  *

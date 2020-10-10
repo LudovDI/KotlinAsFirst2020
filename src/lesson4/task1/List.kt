@@ -365,54 +365,54 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
-    var result: String
+    val result = StringBuilder()
     val count: Int = n / 1000
 
     if (count > 0) {
-        result = toText(count, true)
-        result += toText(n - count * 1000, false)
-    } else result = toText(n - count * 1000, false)
-    return result.dropLast(1)
+        result.append(toText(count, true))
+        when (count % 100) {
+            in 11..20 -> result.append("тысяч ")
+            else -> when (count % 10) {
+                1 -> result.append("тысяча ")
+                2, 3, 4 -> result.append("тысячи ")
+                else -> result.append("тысяч ")
+            }
+        }
+    }
+    result.append(toText(n % 1000, false))
+    return result.toString().removeSuffix(" ")
 }
 
-fun toText(count: Int, check: Boolean): String {
-    var text = ""
-    val char1: Int = count / 100
-    val char2: Int = count / 10 - char1 * 10
-    val char3: Int = count % 10
+fun toText(count: Int, exception: Boolean): StringBuilder {
+    val text = StringBuilder()
+    val firstChar: Int = count / 100
+    val secondChar: Int = count / 10 - firstChar * 10
+    val thirdChar: Int = count % 10
 
     val hundred = arrayOf(
-        "сто", "двести", "триста", "четыреста",
-        "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"
+        "сто ", "двести ", "триста ", "четыреста ",
+        "пятьсот ", "шестьсот ", "семьсот ", "восемьсот ", "девятьсот "
     )
     val decades = arrayOf(
-        "двадцать", "тридцать", "сорок", "пятьдесят",
-        "шестьдесят", "семьдесят", "восемьдесят", "девяносто"
+        "двадцать ", "тридцать ", "сорок ", "пятьдесят ",
+        "шестьдесят ", "семьдесят ", "восемьдесят ", "девяносто "
     )
     val unit = arrayOf(
-        "один", "два", "три", "четыре", "пять", "шесть", "семь",
-        "восемь", "девять", "десять", "одиннадцать", "двенадцать",
-        "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать",
-        "семнадцать", "восемнадцать", "девятнадцать"
+        "один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ",
+        "восемь ", "девять ", "десять ", "одиннадцать ", "двенадцать ",
+        "тринадцать ", "четырнадцать ", "пятнадцать ", "шестнадцать ",
+        "семнадцать ", "восемнадцать ", "девятнадцать "
     )
 
-    if (check) {
-        unit[0] = "одна"
-        unit[1] = "две"
+    if (exception) {
+        unit[0] = "одна "
+        unit[1] = "две "
     }
 
-    if (char1 > 0) text = hundred[char1 - 1] + " "
-    if (char2 == 1) text = text + unit[9 + char3] + " " else {
-        if (char2 >= 2) text = text + decades[char2 - 2] + " "
-        if (char3 > 0) text = text + unit[char3 - 1] + " "
-    }
-
-    if (check) {
-        when (char3) {
-            1 -> text += "тысяча "
-            2, 3, 4 -> text += "тысячи "
-            0, 5, 6, 7, 8, 9 -> text += "тысяч "
-        }
+    if (firstChar > 0) text.append(hundred[firstChar - 1])
+    if (secondChar == 1) text.append(unit[9 + thirdChar]) else {
+        if (secondChar >= 2) text.append(decades[secondChar - 2])
+        if (thirdChar > 0) text.append(unit[thirdChar - 1])
     }
 
     return text
