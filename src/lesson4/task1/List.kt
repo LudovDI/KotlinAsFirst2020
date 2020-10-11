@@ -196,10 +196,8 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
     var sum = 0
     list.reverse()
     for (i in 0 until list.size) {
-        for (j in i until list.size)
-            sum += list[j]
-        list[i] = sum
-        sum = 0
+        list[i] = list.sum() - sum
+        sum += list[i]
     }
     list.reverse()
     return list
@@ -298,63 +296,67 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    var result = ""
+    val result = StringBuilder()
     var digit = n
 
-    while (digit >= 1000) {
-        result += "M"
-        digit -= 1000
-    }
-    while (digit >= 900) {
-        result += "CM"
-        digit -= 900
-    }
-    while (digit >= 500) {
-        result += "D"
-        digit -= 500
-    }
-    while (digit >= 400) {
-        result += "CD"
-        digit -= 400
-    }
-    while (digit >= 100) {
-        result += "C"
-        digit -= 100
-    }
-    while (digit >= 90) {
-        result += "XC"
-        digit -= 90
-    }
-    while (digit >= 50) {
-        result += "L"
-        digit -= 50
-    }
-    while (digit >= 40) {
-        result += "XL"
-        digit -= 40
-    }
-    while (digit >= 10) {
-        result += "X"
-        digit -= 10
-    }
-    while (digit >= 9) {
-        result += "IX"
-        digit -= 9
-    }
-    while (digit >= 5) {
-        result += "V"
-        digit -= 5
-    }
-    while (digit >= 4) {
-        result += "IV"
-        digit -= 4
-    }
-    while (digit >= 1) {
-        result += "I"
-        digit -= 1
+    while (digit > 0) {
+        when {
+            digit >= 1000 -> {
+                result.append("M")
+                digit -= 1000
+            }
+            digit >= 900 -> {
+                result.append("CM")
+                digit -= 900
+            }
+            digit >= 500 -> {
+                result.append("D")
+                digit -= 500
+            }
+            digit >= 400 -> {
+                result.append("CD")
+                digit -= 400
+            }
+            digit >= 100 -> {
+                result.append("C")
+                digit -= 100
+            }
+            digit >= 90 -> {
+                result.append("XC")
+                digit -= 90
+            }
+            digit >= 50 -> {
+                result.append("L")
+                digit -= 50
+            }
+            digit >= 40 -> {
+                result.append("XL")
+                digit -= 40
+            }
+            digit >= 10 -> {
+                result.append("X")
+                digit -= 10
+            }
+            digit >= 9 -> {
+                result.append("IX")
+                digit -= 9
+            }
+            digit >= 5 -> {
+                result.append("V")
+                digit -= 5
+            }
+            digit >= 4 -> {
+                result.append("IV")
+                digit -= 4
+            }
+            else -> {
+                result.append("I")
+                digit -= 1
+            }
+        }
     }
 
-    return result
+    return result.toString()
 }
 
 /**
@@ -366,7 +368,7 @@ fun roman(n: Int): String {
  */
 fun russian(n: Int): String {
     val result = StringBuilder()
-    val count: Int = n / 1000
+    val count = n / 1000
 
     if (count > 0) {
         result.append(toText(count, true))
@@ -385,9 +387,9 @@ fun russian(n: Int): String {
 
 fun toText(count: Int, exception: Boolean): StringBuilder {
     val text = StringBuilder()
-    val firstChar: Int = count / 100
-    val secondChar: Int = count / 10 - firstChar * 10
-    val thirdChar: Int = count % 10
+    val firstChar = count / 100
+    val secondChar = count / 10 - firstChar * 10
+    val thirdChar = count % 10
 
     val hundred = arrayOf(
         "сто ", "двести ", "триста ", "четыреста ",
