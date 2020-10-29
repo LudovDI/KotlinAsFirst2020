@@ -79,8 +79,7 @@ fun digitNumber(n: Int): Int {
     var count = 0
     var digit = n
     if (digit == 0) return 1
-    if (digit < 0) digit = abs(digit)
-    while (digit > 0) {
+    while (abs(digit) > 0) {
         count++
         digit /= 10
     }
@@ -322,7 +321,11 @@ fun squareSequenceDigit(n: Int): Int {
         argument = digit * digit
         count += digitNumber(argument)
     }
-    return if (count == n) digit * digit % 10
+    argument = digit * digit
+    for (i in 1..count - n) argument /= 10
+    return argument % 10
+
+    /*return if (count == n) digit * digit % 10
     else {
         argument = digit * digit
         while (count != n) {
@@ -330,7 +333,7 @@ fun squareSequenceDigit(n: Int): Int {
             argument /= 10
         }
         argument % 10
-    }
+    }*/
 }
 
 /**
@@ -350,7 +353,11 @@ fun fibSequenceDigit(n: Int): Int {
         digit++
         count += digitNumber(fib(digit))
     }
-    return if (count == n) (fib(digit) % 10)
+    argument = fib(digit)
+    for (i in 1..count - n) argument /= 10
+    return argument % 10
+
+    /*return if (count == n) (fib(digit) % 10)
     else {
         argument = fib(digit)
         while (count != n) {
@@ -358,5 +365,5 @@ fun fibSequenceDigit(n: Int): Int {
             argument /= 10
         }
         argument % 10
-    }
+    }*/
 }
