@@ -148,9 +148,9 @@ fun rookOrBishopThreatens(
 fun triangleKind(a: Double, b: Double, c: Double): Int {
     if (a > b + c || b > a + c || c > a + b) return -1
     val expression = when {
-        (a >= b && a >= c) -> a * a - (b * b + c * c)
-        (b >= c) -> b * b - (a * a + c * c)
-        else -> c * c - (a * a + b * b)
+        a >= b && a >= c -> a * a - b * b - c * c
+        b >= c -> b * b - a * a - c * c
+        else -> c * c - a * a - b * b
     }
     return when {
         expression > 0.0 -> 2

@@ -168,16 +168,18 @@ fun collatzSteps(x: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
+fun lcm(m: Int, n: Int): Int = m * n / gcp(m, n)
+
+fun gcp(m: Int, n: Int): Int {
     if (m == 1 && n == 1) return 1
-    var k = 0
-    val min1 = if (m == 1) 1 else minDivisor(m)
-    val min2 = if (n == 1) 1 else minDivisor(n)
-    do {
-        k += if (min1 == min2) min1 else min1 * min2
-        if (k % m == 0 && k % n == 0) return k
-    } while (k <= m * n)
-    return k
+    val max1 = if (maxDivisor(m) == 1) m else maxDivisor(m)
+    val max2 = if (maxDivisor(n) == 1) n else maxDivisor(n)
+    var k = if (minDivisor(m) >= minDivisor(n)) minDivisor(m) else minDivisor(n)
+    while (k <= max1 && k <= max2) {
+        if (m % k == 0 && n % k == 0) return k
+        k += if (m % 2 == 0 && n % 2 == 0) 2 else 1
+    }
+    return 1
 }
 
 /**
@@ -187,14 +189,7 @@ fun lcm(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    var count = 2
-    while (count <= n || count <= m) {
-        if (n % count == 0 && m % count == 0) return false
-        else count++
-    }
-    return true
-}
+fun isCoPrime(m: Int, n: Int): Boolean = gcp(m, n) == 1
 
 /**
  * Средняя (3 балла)
@@ -204,7 +199,7 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean {
-    var k = 0
+    var k = sqrt(m.toDouble()).toInt()
     while (k <= sqrt(n.toDouble()).toInt()) {
         if (k * k in m..n) return true
         else k++
@@ -315,25 +310,13 @@ fun cos(x: Double, eps: Double): Double {
 fun squareSequenceDigit(n: Int): Int {
     var count = 0
     var digit = 0
-    var argument: Int
     while (count < n) {
         digit++
-        argument = digit * digit
+        val argument = digit * digit
         count += digitNumber(argument)
     }
-    argument = digit * digit
-    for (i in 1..count - n) argument /= 10
-    return argument % 10
-
-    /*return if (count == n) digit * digit % 10
-    else {
-        argument = digit * digit
-        while (count != n) {
-            count--
-            argument /= 10
-        }
-        argument % 10
-    }*/
+    val ten = 10.0
+    return digit * digit / ten.pow(count - n).toInt() % 10
 }
 
 /**
@@ -348,22 +331,10 @@ fun squareSequenceDigit(n: Int): Int {
 fun fibSequenceDigit(n: Int): Int {
     var count = 0
     var digit = 0
-    var argument: Int
     while (count < n) {
         digit++
         count += digitNumber(fib(digit))
     }
-    argument = fib(digit)
-    for (i in 1..count - n) argument /= 10
-    return argument % 10
-
-    /*return if (count == n) (fib(digit) % 10)
-    else {
-        argument = fib(digit)
-        while (count != n) {
-            count--
-            argument /= 10
-        }
-        argument % 10
-    }*/
+    val ten = 10.0
+    return fib(digit) / ten.pow(count - n).toInt() % 10
 }

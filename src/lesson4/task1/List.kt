@@ -3,6 +3,8 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
+import lesson3.task1.isPrime
+import lesson3.task1.minDivisor
 import kotlin.math.sqrt
 import kotlin.math.pow
 
@@ -146,7 +148,7 @@ fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() /
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
     val arithmeticAverage = mean(list)
-    for (i in 0 until list.size)
+    for (i in list.indices)
         list[i] -= arithmeticAverage
     return list
 }
@@ -205,23 +207,18 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
 fun factorize(n: Int): List<Int> {
     val result = mutableListOf<Int>()
     var digit = n
-    var divider = 2
+    var divider = minDivisor(digit)
     while (digit > 1) {
         while (!(isPrime(digit))) {
-            if (digit % divider == 0 && isPrime(divider)) {
-                digit /= divider
-                result.add(divider)
-            }
-            if (digit % divider != 0) divider++
+            digit /= divider
+            result.add(divider)
+            divider = minDivisor(digit)
         }
         result.add(digit)
         break
     }
     return result.sorted()
 }
-
-fun isPrime(n: Int) = n >= 2 && (2..n / 2).all { n % it != 0 }
-
 
 /**
  * Сложная (4 балла)
@@ -289,19 +286,16 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    var result = buildString { String }
     var digit = n
     val arabicNumerals = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
     val romanNumerals = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
 
-    while (digit > 0) {
-        for (i in 0..12) while (digit >= arabicNumerals[i]) {
-            result += romanNumerals[i]
+    return buildString {
+        for (i in arabicNumerals.indices) while (digit >= arabicNumerals[i]) {
+            append(romanNumerals[i])
             digit -= arabicNumerals[i]
         }
     }
-
-    return result
 }
 
 /**
@@ -312,22 +306,22 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
-    var result = buildString { String }
+    val result = StringBuilder()
     val count = n / 1000
 
     if (count > 0) {
-        result += toText(count, true)
-        result += when (count % 100) {
-            in 11..20 -> "тысяч "
+        result.append(toText(count, true))
+        when (count % 100) {
+            in 11..20 -> result.append("тысяч ")
             else -> when (count % 10) {
-                1 -> "тысяча "
-                2, 3, 4 -> "тысячи "
-                else -> "тысяч "
+                1 -> result.append("тысяча ")
+                2, 3, 4 -> result.append("тысячи ")
+                else -> result.append("тысяч ")
             }
         }
     }
-    result += toText(n % 1000, false)
-    return result.removeSuffix(" ")
+    result.append(toText(n % 1000, false))
+    return result.toString().removeSuffix(" ")
 }
 
 fun toText(count: Int, exception: Boolean): StringBuilder {
