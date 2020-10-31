@@ -209,13 +209,9 @@ fun factorize(n: Int): List<Int> {
     var digit = n
     var divider = minDivisor(digit)
     while (digit > 1) {
-        while (!(isPrime(digit))) {
-            digit /= divider
-            result.add(divider)
-            divider = minDivisor(digit)
-        }
-        result.add(digit)
-        break
+        result.add(divider)
+        digit /= divider
+        divider = minDivisor(digit)
     }
     return result.sorted()
 }

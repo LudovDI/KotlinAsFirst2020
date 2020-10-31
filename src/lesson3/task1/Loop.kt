@@ -170,16 +170,11 @@ fun collatzSteps(x: Int): Int {
  */
 fun lcm(m: Int, n: Int): Int = m * n / gcp(m, n)
 
-fun gcp(m: Int, n: Int): Int {
-    if (m == 1 && n == 1) return 1
-    val max1 = if (maxDivisor(m) == 1) m else maxDivisor(m)
-    val max2 = if (maxDivisor(n) == 1) n else maxDivisor(n)
-    var k = if (minDivisor(m) >= minDivisor(n)) minDivisor(m) else minDivisor(n)
-    while (k <= max1 && k <= max2) {
-        if (m % k == 0 && n % k == 0) return k
-        k += if (m % 2 == 0 && n % 2 == 0) 2 else 1
-    }
-    return 1
+fun gcp(m: Int, n: Int): Int = when {
+    m >= n && m % n == 0 -> n
+    n >= m && n % m == 0 -> m
+    m >= n -> gcp(n, m % n)
+    else -> gcp(m, n % m)
 }
 
 /**
@@ -315,8 +310,7 @@ fun squareSequenceDigit(n: Int): Int {
         val argument = digit * digit
         count += digitNumber(argument)
     }
-    val ten = 10.0
-    return digit * digit / ten.pow(count - n).toInt() % 10
+    return digit * digit / 10.0.pow(count - n).toInt() % 10
 }
 
 /**
@@ -335,6 +329,5 @@ fun fibSequenceDigit(n: Int): Int {
         digit++
         count += digitNumber(fib(digit))
     }
-    val ten = 10.0
-    return fib(digit) / ten.pow(count - n).toInt() % 10
+    return fib(digit) / 10.0.pow(count - n).toInt() % 10
 }
