@@ -94,9 +94,16 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *
  * Например:
  *   buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
- *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
+ *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf(
  */
-fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = TODO()
+fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
+    val newGrades = mutableMapOf<Int, List<String>>()
+    for ((name, grade) in grades) {
+        val list = newGrades.getOrDefault(grade, mutableListOf())
+        newGrades[grade] = list + name
+    }
+    return newGrades
+}
 
 /**
  * Простая (2 балла)
@@ -108,7 +115,12 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = TODO()
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "z", "b" to "sweet")) -> true
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
-fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = TODO()
+fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
+    for (key in a.keys) {
+        if (a[key] != b[key]) return false
+    }
+    return true
+}
 
 /**
  * Простая (2 балла)
@@ -125,7 +137,17 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = TODO()
  *     -> a changes to mutableMapOf() aka becomes empty
  */
 fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
-    TODO()
+    val pairsToRemove = mutableListOf<String>()
+
+    for ((name, key) in a) {
+        if (b[name] == key) {
+            pairsToRemove.add(name)
+        }
+    }
+
+    for (name in pairsToRemove) {
+        a.remove(name)
+    }
 }
 
 /**
@@ -135,7 +157,23 @@ fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
  * В выходном списке не должно быть повторяюихся элементов,
  * т. е. whoAreInBoth(listOf("Марат", "Семён, "Марат"), listOf("Марат", "Марат")) == listOf("Марат")
  */
-fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
+fun whoAreInBoth(a: List<String>, b: List<String>): List<String> {
+    val names = mutableListOf<String>()
+    var flag = 0
+
+    for (aNames in a) {
+        for (bNames in b) {
+            if (names.isEmpty() && aNames == bNames) flag = 1 else {
+                for (i in 0..names.size)
+                    if (aNames == bNames && aNames != names[i] && bNames != names[i]) flag = 1
+            }
+        }
+        if (flag == 1) names.add(aNames)
+        flag = 0
+    }
+
+    return names
+}
 
 /**
  * Средняя (3 балла)
@@ -154,7 +192,20 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
  *     mapOf("Emergency" to "911", "Police" to "02")
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
-fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> = TODO()
+fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
+    val newMap = mutableMapOf<String, String>()
+    for ((nameB, phoneB) in mapB)
+        for ((nameA, phoneA) in mapA) {
+            val listA = newMap.getOrDefault(nameA, phoneA)
+            when {
+                nameA == nameB && phoneA == phoneB -> newMap[nameA] = listA
+                nameA !in mapB -> newMap[nameA] = listA
+                nameB !in mapA -> newMap[nameB] = phoneB
+                else -> newMap[nameA] = mapA[nameA] + ", " + phoneB
+            }
+        }
+    return newMap
+}
 
 /**
  * Средняя (4 балла)
@@ -166,7 +217,21 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> = TODO()
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
+    val result = mutableMapOf<String, Double>()
+    for ((stock1, grade1) in stockPrices) {
+        var count = 0
+        var gradeSum = 0.0
+        result.getOrDefault(stock1, grade1)
+        for ((stock2, grade2) in stockPrices)
+            if (stock1 == stock2) {
+                gradeSum += grade2
+                count++
+            }
+        result[stock1] = gradeSum / count
+    }
+    return result
+}
 
 /**
  * Средняя (4 балла)
