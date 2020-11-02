@@ -248,7 +248,17 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *     "печенье"
  *   ) -> "Мария"
  */
-fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? = TODO()
+fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
+    var result = ""
+    var min = 0.0
+    for ((name, pairs) in stuff) {
+        if (pairs.first == kind && (min == 0.0 || min > pairs.second)) {
+            min = pairs.second
+            result = name
+        }
+    }
+    return if (result == "") null else result
+}
 
 /**
  * Средняя (3 балла)
@@ -259,7 +269,18 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+    var flag = 0
+    if (chars.isEmpty() || word == "") return false
+    for (element1 in word) {
+        for (element2 in chars) if (element1 == element2) {
+            flag = 0
+            break
+        } else flag = 1
+        if (flag == 1) return false
+    }
+    return true
+}
 
 /**
  * Средняя (4 балла)
@@ -273,7 +294,19 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
+fun extractRepeats(list: List<String>): Map<String, Int> {
+    val result = mutableMapOf<String, Int>()
+    for (element1 in list) {
+        var count = 0
+        for (element2 in list)
+            if (element1 == element2) count++
+        if (count != 1) {
+            result.getOrDefault(element1, count)
+            result[element1] = count
+        }
+    }
+    return result
+}
 
 /**
  * Средняя (3 балла)
@@ -287,7 +320,34 @@ fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean = TODO()
+fun hasAnagrams(words: List<String>): Boolean {
+    if (words.isEmpty()) return false
+    for (element1 in words) {
+        for (element2 in words) {
+            if (element1 == element2) break
+            if (element1.length == element2.length) {
+                val map1 = mutableMapOf<Char, Int>()
+                val map2 = mutableMapOf<Char, Int>()
+                for (i in element1.indices) {
+                    val count1 = 1
+                    val count2 = 1
+                    map1.getOrDefault(element1[i], count1)
+                    map2.getOrDefault(element2[i], count2)
+                    map1[element1[i]] = count1
+                    map2[element2[i]] = count2
+                    for ((key, value) in map1) if (element1[i] == key) {
+                        map1[key] = value + 1
+                    }
+                    for ((key, value) in map2) if (element2[i] == key) {
+                        map2[key] = value + 1
+                    }
+                }
+                if (map1 == map2) return true
+            }
+        }
+    }
+    return false
+}
 
 /**
  * Сложная (5 баллов)
