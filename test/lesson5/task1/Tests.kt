@@ -155,6 +155,10 @@ class Tests {
             emptyList<String>(),
             whoAreInBoth(listOf("Marat", "Mikhail"), listOf("Sveta", "Kirill"))
         )
+        assertEquals(
+            listOf(""),
+            whoAreInBoth(listOf("", ""), listOf(""))
+        )
     }
 
     @Test
@@ -186,6 +190,13 @@ class Tests {
             mergePhoneBooks(
                 mapOf("Emergency" to "112", "Fire department" to "01"),
                 mapOf("Emergency" to "911", "Police" to "02")
+            )
+        )
+        assertEquals(
+            mapOf("" to ""),
+            mergePhoneBooks(
+                mapOf(),
+                mapOf("" to "")
             )
         )
     }
@@ -227,6 +238,13 @@ class Tests {
                 "печенье"
             )
         )
+        assertEquals(
+            "",
+            findCheapestStuff(
+                mapOf("" to ("" to 0.0)),
+                ""
+            )
+        )
     }
 
     @Test
@@ -235,6 +253,7 @@ class Tests {
         assertFalse(canBuildFrom(emptyList(), "foo"))
         assertTrue(canBuildFrom(listOf('a', 'b', 'o'), "baobab"))
         assertFalse(canBuildFrom(listOf('a', 'm', 'r'), "Marat"))
+        assertTrue(canBuildFrom(listOf(), ""))
     }
 
     @Test
@@ -262,6 +281,7 @@ class Tests {
         assertFalse(hasAnagrams(listOf("рот", "свет", "код", "дверь")))
         assertFalse(hasAnagrams(listOf("поле", "полено")))
         assertTrue(hasAnagrams(listOf("лунь", "нуль")))
+        assertTrue(hasAnagrams(listOf("", "")))
     }
 
     @Test
