@@ -196,22 +196,13 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
     if (stockPrices.isEmpty()) return emptyMap()
     val result = mutableMapOf<String, Double>()
-    var reiteration = ""
-    var count = 0
-    var gradeSum = 0.0
+    val numberOfRepetitions = mutableMapOf<String, Int>()
+    val sum = mutableMapOf<String, Double>()
     for ((stock, cost) in stockPrices) {
-        if (stock == reiteration || reiteration == "") {
-            reiteration = stock
-            gradeSum += cost
-            count++
-        } else {
-            result[reiteration] = gradeSum / count
-            reiteration = stock
-            gradeSum = cost
-            count = 1
-        }
+        numberOfRepetitions[stock] = numberOfRepetitions.getOrDefault(stock, 0) + 1
+        sum[stock] = sum.getOrDefault(stock, 0.0) + cost
     }
-    result[reiteration] = gradeSum / count
+    for ((stock, cost) in sum) result[stock] = cost / numberOfRepetitions.getValue(stock)
     return result
 }
 
@@ -231,15 +222,15 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var result = kind
-    var min = -1.0
+    val result = mutableMapOf<Double, String>()
+    var min = Double.MAX_VALUE
     for ((name, pairs) in stuff) {
-        if (pairs.first == kind && (min == -1.0 || min > pairs.second)) {
+        if (pairs.first == kind && min > pairs.second) {
             min = pairs.second
-            result = name
+            result[min] = name
         }
     }
-    return if (result == kind && min == -1.0) null else result
+    return result[min]
 }
 
 /**
@@ -252,16 +243,9 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    var flag = 0
-    if (chars == listOf<Char>() && word == "") return true
-    if (chars.isEmpty() || word == "") return false
-    for (element1 in word) {
-        for (element2 in chars) if (element1 == element2) {
-            flag = 0
-            break
-        } else flag = 1
-        if (flag == 1) return false
-    }
+    if (word == "") return true
+    if (chars.isEmpty()) return false
+    for (char in chars) if (!word.contains(char)) return false
     return true
 }
 
@@ -280,14 +264,15 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
     val elementToRemove = mutableListOf<String>()
-    for (element in list)
+    for (element in list) {
         if (result.contains(element)) {
-            result[element] = result.getValue(element) + 1
+            result[element] = result[element]!! + 1
             elementToRemove.remove(element)
         } else {
             result[element] = 1
             elementToRemove.add(element)
         }
+    }
     for (element in elementToRemove)
         result.remove(element)
     return result
@@ -306,21 +291,10 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    for ((count1, firstWord) in words.withIndex()) {
-        for ((count2, secondWord) in words.withIndex()) {
-            if (firstWord.length == secondWord.length && count1 != count2) {
-                val map1 = mutableMapOf<Char, Int>()
-                val map2 = mutableMapOf<Char, Int>()
-                for (i in secondWord.indices) {
-                    if (map1.contains(secondWord[i])) map1[secondWord[i]] = map1.getValue(secondWord[i]) + 1
-                    else map1[secondWord[i]] = 1
-                    if (map2.contains(firstWord[i])) map2[firstWord[i]] = map2.getValue(firstWord[i]) + 1
-                    else map2[firstWord[i]] = 1
-                }
-                if (map1 == map2) return true
-            }
-        }
-    }
+    val sequence = mutableSetOf<String>()
+    for (word in words)
+        if (word.toCharArray().sorted().toString() in sequence) return true
+        else sequence.add(word.toCharArray().sorted().toString())
     return false
 }
 
