@@ -245,7 +245,9 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     if (word == "") return true
     if (chars.isEmpty()) return false
-    for (char in word) if (!chars.toString().contains(char)) return false
+    var sequence = ""
+    for (element in chars) sequence += element
+    for (char in word) if (!sequence.contains(char)) return false
     return true
 }
 
