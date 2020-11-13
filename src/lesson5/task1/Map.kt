@@ -246,8 +246,8 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     if (word == "") return true
     if (chars.isEmpty()) return false
     var sequence = ""
-    for (element in chars) sequence += element
-    for (char in word) if (!sequence.contains(char)) return false
+    for (element in chars) sequence += element.toLowerCase()
+    for (char in word) if (!sequence.contains(char.toLowerCase())) return false
     return true
 }
 
