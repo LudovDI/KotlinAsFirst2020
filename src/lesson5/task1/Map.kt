@@ -336,17 +336,16 @@ fun hasAnagrams(words: List<String>): Boolean {
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, Set<String>>()
-    for ((friend1, friendsOfFriend1) in friends)
-        for ((friend2, friendsOfFriend2) in friends) {
-            val set = friendsOfFriend1.toMutableSet()
-            if (friend2 in set) {
-                set.addAll(friendsOfFriend2)
-                set.remove(friend1)
-                result[friend1] = set
-                break
+    for ((name, friendsOfFriend) in friends) {
+        val set = friendsOfFriend.toMutableSet()
+        for (friend in friends.keys) {
+            if (friend in set) {
+                set.addAll(friends.getValue(friend))
+                set.remove(name)
             }
-            result[friend1] = set
+            result[name] = set
         }
+    }
     for (friendsOfFriend in friends.values)
         for (element in friendsOfFriend) {
             if (!friends.contains(element)) result[element] = emptySet()
@@ -375,14 +374,13 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     if (list.isEmpty()) return Pair(-1, -1)
     val map = mutableMapOf<Int, Int>()
     for ((digit, count) in list.withIndex()) {
-        map[count] = digit
+        map[digit] = count
     }
-    for ((first, count1) in map)
-        for ((second, count2) in map) {
-            if (count1 == count2) break
-            if (first + second == number)
-                return if (first >= second) Pair(count2, count1)
-                else Pair(count1, count2)
+    for (i in 0 until map.size - 1)
+        for (j in i + 1 until map.size) {
+            if (map.getValue(i) + map.getValue(j) == number)
+                return if (map.getValue(i) > map.getValue(j)) Pair(j, i)
+                else Pair(i, j)
         }
     return Pair(-1, -1)
 }
