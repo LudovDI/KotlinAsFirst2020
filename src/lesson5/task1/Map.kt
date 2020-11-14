@@ -222,15 +222,15 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    val result = mutableMapOf<Double, String>()
+    var result: String? = null
     var min = Double.MAX_VALUE
     for ((name, pairs) in stuff) {
         if (pairs.first == kind && min >= pairs.second) {
             min = pairs.second
-            result[min] = name
+            result = name
         }
     }
-    return result[min]
+    return result
 }
 
 /**
@@ -294,9 +294,11 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  */
 fun hasAnagrams(words: List<String>): Boolean {
     val sequence = mutableSetOf<String>()
-    for (word in words)
-        if (word.toCharArray().sorted().toString() in sequence) return true
-        else sequence.add(word.toCharArray().sorted().toString())
+    for (element in words) {
+        val word = element.toCharArray().sorted().toString()
+        if (word in sequence) return true
+        else sequence.add(word)
+    }
     return false
 }
 
@@ -337,19 +339,24 @@ fun hasAnagrams(words: List<String>): Boolean {
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, Set<String>>()
     for ((name, friendsOfFriend) in friends) {
+        var count = 1
         val set = friendsOfFriend.toMutableSet()
-        for (friend in friends.keys) {
-            if (friend in set) {
-                set.addAll(friends.getValue(friend))
-                set.remove(name)
+        while (count <= friendsOfFriend.size) {
+            for (friend in friends.keys) {
+                if (friend in set) {
+                    set.addAll(friends.getValue(friend))
+                    set.addAll(result.getOrDefault(friend, emptySet()))
+                    set.remove(name)
+                }
             }
+            count++
             result[name] = set
         }
+        if (set.isEmpty()) result[name] = emptySet()
     }
     for (friendsOfFriend in friends.values)
-        for (element in friendsOfFriend) {
+        for (element in friendsOfFriend)
             if (!friends.contains(element)) result[element] = emptySet()
-        }
     return result
 }
 
@@ -372,15 +379,10 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     if (list.isEmpty()) return Pair(-1, -1)
-    val map = mutableMapOf<Int, Int>()
-    for ((digit, count) in list.withIndex()) {
-        map[digit] = count
-    }
-    for (i in 0 until map.size - 1)
-        for (j in i + 1 until map.size) {
-            if (map.getValue(i) + map.getValue(j) == number)
-                return if (map.getValue(i) > map.getValue(j)) Pair(j, i)
-                else Pair(i, j)
+    for (i in 0 until list.size - 1)
+        for (j in i + 1 until list.size) {
+            if (list[i] + list[j] == number)
+                return Pair(i, j)
         }
     return Pair(-1, -1)
 }
