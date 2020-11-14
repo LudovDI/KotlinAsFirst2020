@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import kotlin.math.max
+
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -409,35 +411,23 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    if (treasures.isEmpty() || capacity == 0) return emptySet()
-    val map = mutableMapOf<Set<String>, Int>()
-    for ((treasure1, pair1) in treasures) {
-        var height = capacity
-        var cost = 0
-        val set = mutableSetOf<String>()
-        if (pair1.first <= height) {
-            height -= pair1.first
-            cost += pair1.first
-            set.add(treasure1)
-            map[set] = cost
-        } else break
-        for ((treasure2, pair2) in treasures) {
-            if (treasure1 == treasure2) break
-            if (pair2.first <= height) {
-                height -= pair2.first
-                cost += pair2.first
-                set.add(treasure1)
-                map[set] = cost
-            }
+    val maxCost = Array(treasures.size + 1) { Array(capacity + 1) { 0 } }
+    val listName = treasures.keys.toList()
+    for (i in 1..treasures.size) {
+        for (j in 1..capacity) {
+            val cost = treasures.getValue(listName[i - 1]).second
+            val weight = treasures.getValue(listName[i - 1]).first
+            if (weight > j)
+                maxCost[i][j] = maxCost[i - 1][j]
+            else maxCost[i][j] = max(maxCost[i - 1][j], maxCost[i - 1][j - weight] + cost)
         }
     }
-    if (map.isEmpty()) return emptySet()
-    var max = 0
-    var result = setOf<String>()
-    for ((set, cost) in map) {
-        if (cost > max) {
-            max = cost
-            result = set
+    val result = mutableSetOf<String>()
+    var j = capacity
+    for (i in treasures.size downTo 1) {
+        if (maxCost[i][j] != maxCost[i - 1][j]) {
+            result.add(listName[i - 1])
+            j = capacity - treasures.getValue(listName[i - 1]).first
         }
     }
     return result
