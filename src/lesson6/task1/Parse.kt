@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import java.lang.NumberFormatException
+
+
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
@@ -74,7 +77,47 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val parts = str.split(" ")
+    if (parts.size != 3) return ""
+    val firstPart: Int
+    val secondPart: Int
+    val thirdPart: Int
+    try {
+        thirdPart = if (parts[2].toInt() > 0) parts[2].toInt() else return ""
+        secondPart = when (parts[1]) {
+            "января" -> 1
+            "февраля" -> 2
+            "марта" -> 3
+            "апреля" -> 4
+            "мая" -> 5
+            "июня" -> 6
+            "июля" -> 7
+            "августа" -> 8
+            "сентября" -> 9
+            "октября" -> 10
+            "ноября" -> 11
+            "декабря" -> 12
+            else -> return ""
+        }
+        val flag = if (thirdPart % 400 == 0 || thirdPart % 4 == 0
+            && thirdPart % 100 != 0
+        ) 1 else 0
+        firstPart = when {
+            (secondPart == 1 || secondPart == 3 || secondPart == 5 || secondPart == 7
+                    || secondPart == 8 || secondPart == 10 || secondPart == 12)
+                    && parts[0].toInt() in 1..31 -> parts[0].toInt()
+            (secondPart == 4 || secondPart == 6 || secondPart == 9 || secondPart == 11)
+                    && parts[0].toInt() in 1..30 -> parts[0].toInt()
+            secondPart == 2 && (flag == 1 && parts[0].toInt() in 1..29
+                    || flag == 0 && parts[0].toInt() in 1..28) -> parts[0].toInt()
+            else -> return ""
+        }
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+    return String.format("%02d.%02d.%d", firstPart, secondPart, thirdPart)
+}
 
 /**
  * Средняя (4 балла)
@@ -86,7 +129,48 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val parts = digital.split(".")
+    if (parts.size != 3) return ""
+    var firstPart: String
+    val secondPart: String
+    val thirdPart: String
+    try {
+        thirdPart = if (parts[2].toInt() > 0) parts[2] else return ""
+        secondPart = when (parts[1].toInt()) {
+            1 -> "января"
+            2 -> "февраля"
+            3 -> "марта"
+            4 -> "апреля"
+            5 -> "мая"
+            6 -> "июня"
+            7 -> "июля"
+            8 -> "августа"
+            9 -> "сентября"
+            10 -> "октября"
+            11 -> "ноября"
+            12 -> "декабря"
+            else -> return ""
+        }
+        val flag = if (parts[2].toInt() % 400 == 0 || parts[2].toInt() % 4 == 0
+            && parts[2].toInt() % 100 != 0
+        ) 1 else 0
+        firstPart = when {
+            (secondPart == "января" || secondPart == "марта" || secondPart == "мая" || secondPart == "июля"
+                    || secondPart == "августа" || secondPart == "октября" || secondPart == "декабря")
+                    && parts[0].toInt() in 1..31 -> parts[0]
+            (secondPart == "апреля" || secondPart == "июня" || secondPart == "сентября" || secondPart == "ноября")
+                    && parts[0].toInt() in 1..30 -> parts[0]
+            secondPart == "февраля" && (flag == 1 && parts[0].toInt() in 1..29
+                    || flag == 0 && parts[0].toInt() in 1..28) -> parts[0]
+            else -> return ""
+        }
+        if (firstPart.toInt() < 10) firstPart = firstPart.drop(1)
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+    return String.format("%s %s %s", firstPart, secondPart, thirdPart)
+}
 
 /**
  * Средняя (4 балла)
@@ -175,7 +259,33 @@ fun mostExpensive(description: String): String = TODO()
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    var result = 0
+    var secondDigit = 0
+    val romanToDigit = mapOf('M' to 1000, 'D' to 500, 'C' to 100, 'L' to 50, 'X' to 10, 'V' to 5, 'I' to 1)
+    for (i in roman.indices) {
+        val firstDigit = if (romanToDigit.contains(roman[i])) romanToDigit.getValue(roman[i]) else return -1
+        if (i == 0) {
+            if (roman.length == 1) return firstDigit
+            else secondDigit += firstDigit
+        } else {
+            when {
+                roman[i - 1] == roman[i] -> result += firstDigit
+                romanToDigit.getValue(roman[i - 1]) > firstDigit -> {
+                    result += secondDigit
+                    secondDigit = firstDigit
+                }
+                else -> result = result + firstDigit - 2 * secondDigit
+            }
+        }
+        if (i == roman.length - 1) {
+            result += secondDigit
+            return result
+
+        }
+    }
+    return -1
+}
 
 /**
  * Очень сложная (7 баллов)
