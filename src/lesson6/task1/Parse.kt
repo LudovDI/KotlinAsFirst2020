@@ -267,7 +267,7 @@ fun fromRoman(roman: String): Int {
         val firstDigit = if (romanToDigit.contains(roman[i])) romanToDigit.getValue(roman[i]) else return -1
         if (i == 0) {
             if (roman.length == 1) return firstDigit
-            else secondDigit += firstDigit
+            else secondDigit = firstDigit
         } else {
             when {
                 roman[i - 1] == roman[i] -> result += firstDigit
