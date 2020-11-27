@@ -2,6 +2,7 @@
 
 package lesson6.task1
 
+import java.lang.IllegalArgumentException
 import java.lang.NumberFormatException
 
 
@@ -242,7 +243,30 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val setOfDigits = expression.split(' ')
+    var result = 0
+    var digit: Int
+    var flag = 1
+    for (i in setOfDigits.indices) {
+        when {
+            i % 2 == 0 -> {
+                digit = try {
+                    if (setOfDigits[i][0] == '+' || setOfDigits[i][0] == '-') throw IllegalArgumentException()
+                    setOfDigits[i].toInt()
+                } catch (e: NumberFormatException) {
+                    throw IllegalArgumentException()
+                }
+                if (flag == 1) result += digit else result -= digit
+            }
+            i % 2 == 1 -> if (setOfDigits[i] == "+" || setOfDigits[i] == "-")
+                flag = if (setOfDigits[i] == "+") 1 else 0
+            else throw IllegalArgumentException()
+
+        }
+    }
+    return result
+}
 
 /**
  * Сложная (6 баллов)
@@ -253,7 +277,16 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    var index = 0
+    val setOfWords = str.split(' ')
+    for (i in 0 until setOfWords.size - 1) {
+        if (setOfWords[i].equals(setOfWords[i + 1], true)) return index
+        index += setOfWords[i].length + 1
+    }
+
+    return -1
+}
 
 /**
  * Сложная (6 баллов)
