@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 import java.lang.NumberFormatException
 
 
@@ -376,4 +377,56 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val result = mutableListOf<Int>()
+    var currentCell = 0
+    while (currentCell <= cells - 1) {
+        result.add(0)
+        currentCell++
+    }
+
+    val mapOfSquareBracket = mutableMapOf<Int, Int>()
+
+    for (i in 0 until commands.length - 1) {
+        var repetitive = 0
+        var flag = 0
+        if (commands[i] in " -+><[]") {
+            if (commands[i] == '[') {
+                flag = 1
+                for (j in i + 1 until commands.length) {
+                    if (commands[j] == '[') repetitive++
+                    if (commands[j] == ']') {
+                        if (repetitive == 0) {
+                            flag = 0
+                            mapOfSquareBracket[i] = j
+                            mapOfSquareBracket[j] = i
+                            break
+                        } else repetitive--
+                    }
+                }
+            }
+        } else throw IllegalArgumentException()
+        if (commands.last() !in " +-[]><" || repetitive != 0 || flag == 1) throw IllegalArgumentException()
+    }
+
+    currentCell = cells / 2
+    var numberOfActions = 0
+    var index = 0
+    while (index in commands.indices) {
+        if (currentCell < 0 || currentCell >= cells) throw IllegalStateException()
+        if (numberOfActions == limit) return result
+        when (commands[index]) {
+            '>' -> currentCell++
+            '<' -> currentCell--
+            '+' -> result[currentCell]++
+            '-' -> result[currentCell]--
+            '[' -> if (result[currentCell] == 0) {
+                index = mapOfSquareBracket[index]!!
+            }
+            ']' -> if (result[currentCell] != 0) index = mapOfSquareBracket.getValue(index)
+        }
+        numberOfActions++
+        index++
+    }
+    return result
+}
