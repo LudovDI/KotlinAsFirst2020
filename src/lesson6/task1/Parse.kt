@@ -390,17 +390,20 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
 
     var currentClose = 0
     var currentOpen = 0
+    var flag = 0
     val mapOfSquareBracket = mutableMapOf<Int, Int>()
     for (i in 0 until commands.length - 1) {
         var repetitive = 0
         if (commands[i] in " -+><[]") {
             if (commands[i] == '[') {
+                flag = 1
                 for (j in i + 1 until commands.length)
                     when (commands[j]) {
                         '[' -> repetitive++
                         ']' -> if (repetitive == 0) {
                             mapOfSquareBracket[i] = j
                             mapOfSquareBracket[j] = i
+                            flag = 0
                             break
                         } else repetitive--
                     }
@@ -408,6 +411,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         } else throw IllegalArgumentException()
         currentOpen += if (commands[i] == '[') 1 else 0
         currentClose += if (commands[i] == ']') 1 else 0
+        if (flag == 1) throw IllegalArgumentException()
     }
     if (commands.last() !in " +-><[]") throw IllegalArgumentException()
     if (commands.last() == '[') currentOpen++ else if (commands.last() == ']') currentClose++
