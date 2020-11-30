@@ -245,7 +245,7 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    if (expression.isEmpty()) throw IllegalArgumentException()
+    if (expression.isEmpty() || expression[0] == ' ') throw IllegalArgumentException()
     val setOfDigits = expression.split(' ')
     var result = 0
     var digit: Int
@@ -387,19 +387,17 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         currentCell++
     }
 
+    var currentClose = 0
+    var currentOpen = 0
     val mapOfSquareBracket = mutableMapOf<Int, Int>()
-
     for (i in 0 until commands.length - 1) {
         var repetitive = 0
-        var flag = 0
         if (commands[i] in " -+><[]") {
             if (commands[i] == '[') {
-                flag = 1
                 for (j in i + 1 until commands.length)
                     when (commands[j]) {
                         '[' -> repetitive++
                         ']' -> if (repetitive == 0) {
-                            flag = 0
                             mapOfSquareBracket[i] = j
                             mapOfSquareBracket[j] = i
                             break
@@ -407,8 +405,12 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                     }
             }
         } else throw IllegalArgumentException()
-        if (commands.last() !in " +-><[]" || repetitive != 0 || flag == 1) throw IllegalArgumentException()
+        currentOpen += if (commands[i] == '[') 1 else 0
+        currentClose += if (commands[i] == ']') 1 else 0
     }
+    if (commands.last() !in " +-><[]") throw IllegalArgumentException()
+    if (commands.last() == '[') currentOpen++ else if (commands.last() == ']') currentClose++
+    if (currentClose != currentOpen) throw IllegalArgumentException()
 
     currentCell = cells / 2
     var numberOfActions = 0
