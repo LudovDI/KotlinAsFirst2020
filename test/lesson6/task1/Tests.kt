@@ -89,6 +89,7 @@ class Tests {
     @Test
     @Tag("6")
     fun plusMinus() {
+        assertThrows(IllegalArgumentException::class.java) { plusMinus("") }
         assertEquals(0, plusMinus("0"))
         assertEquals(4, plusMinus("2 + 2"))
         assertEquals(6, plusMinus("2 + 31 - 40 + 13"))
@@ -133,6 +134,7 @@ class Tests {
     @Test
     @Tag("7")
     fun computeDeviceCells() {
+        assertThrows(IllegalArgumentException::class.java) { computeDeviceCells(1, "[", 5913) }
         assertEquals(
             listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2),
             computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 256)

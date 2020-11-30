@@ -245,6 +245,7 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
+    if (expression.isEmpty()) throw IllegalArgumentException()
     val setOfDigits = expression.split(' ')
     var result = 0
     var digit: Int
@@ -378,6 +379,7 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    if (commands.length == 1) if (commands[0] !in " -+><") throw IllegalArgumentException()
     val result = mutableListOf<Int>()
     var currentCell = 0
     while (currentCell <= cells - 1) {
@@ -393,20 +395,19 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         if (commands[i] in " -+><[]") {
             if (commands[i] == '[') {
                 flag = 1
-                for (j in i + 1 until commands.length) {
-                    if (commands[j] == '[') repetitive++
-                    if (commands[j] == ']') {
-                        if (repetitive == 0) {
+                for (j in i + 1 until commands.length)
+                    when (commands[j]) {
+                        '[' -> repetitive++
+                        ']' -> if (repetitive == 0) {
                             flag = 0
                             mapOfSquareBracket[i] = j
                             mapOfSquareBracket[j] = i
                             break
                         } else repetitive--
                     }
-                }
             }
         } else throw IllegalArgumentException()
-        if (commands.last() !in " +-[]><" || repetitive != 0 || flag == 1) throw IllegalArgumentException()
+        if (commands.last() !in " +-><[]" || repetitive != 0 || flag == 1) throw IllegalArgumentException()
     }
 
     currentCell = cells / 2
