@@ -416,12 +416,18 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     currentCell = cells / 2
     var numberOfActions = 0
     var index = 0
+    println(currentCell)
     while (index in commands.indices) {
-        if (currentCell < 0 || currentCell >= cells) throw IllegalStateException()
         if (numberOfActions == limit) return result
         when (commands[index]) {
-            '>' -> currentCell++
-            '<' -> currentCell--
+            '>' -> {
+                currentCell++
+                if (currentCell >= cells) throw IllegalStateException()
+            }
+            '<' -> {
+                currentCell--
+                if (currentCell < 0) throw IllegalStateException()
+            }
             '+' -> result[currentCell]++
             '-' -> result[currentCell]--
             '[' -> if (result[currentCell] == 0) {
@@ -432,5 +438,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         numberOfActions++
         index++
     }
+    println(currentCell)
     return result
 }
