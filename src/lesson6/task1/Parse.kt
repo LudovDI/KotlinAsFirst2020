@@ -386,6 +386,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         result.add(0)
         currentCell++
     }
+    if (commands.isEmpty()) return result
 
     var currentClose = 0
     var currentOpen = 0
