@@ -90,18 +90,24 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     val result = mutableMapOf<String, Int>()
     val reader = File(inputName).bufferedReader()
     fun numberOfOccurrences(firstWord: String, secondWord: String): Int {
-        var number = 0
         if (firstWord.length < secondWord.length) return 0
+        var number = 0
         var i = 0
         var j = 0
         while (i in firstWord.indices && j in secondWord.indices) {
-            if (firstWord[i].equals(secondWord[j], true)) {
-                if (j == secondWord.length - 1) {
-                    i -= j
+            when {
+                firstWord[i].equals(secondWord[j], true) ->
+                    if (j == secondWord.lastIndex) {
+                        i -= j
+                        j = -1
+                        number++
+                    }
+                j != 0 -> {
+                    i--
                     j = -1
-                    number++
                 }
-            } else j = -1
+                else -> j--
+            }
             i++
             j++
         }
@@ -110,7 +116,7 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     for (stringFromSubstrings in substrings) {
         var number = 0
         for (line in File(inputName).readLines())
-            for (wordFromText in line.split(' ')) {
+            for (wordFromText in line.split(Regex("\\s+"))) {
                 number += numberOfOccurrences(wordFromText, stringFromSubstrings)
             }
         result[stringFromSubstrings] = number

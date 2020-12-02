@@ -2,9 +2,11 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
-import java.lang.NumberFormatException
+import java.lang.StringBuilder
+import java.util.Stack
 
 
 // Урок 6: разбор строк, исключения
@@ -81,44 +83,18 @@ fun main() {
  */
 fun dateStrToDigit(str: String): String {
     val parts = str.split(" ")
+    val strToInt = mapOf(
+        "января" to 1, "февраля" to 2, "марта" to 3, "апреля" to 4, "мая" to 5, "июня" to 6,
+        "июля" to 7, "августа" to 8, "сентября" to 9, "октября" to 10, "ноября" to 11, "декабря" to 12
+    )
     if (parts.size != 3) return ""
-    val firstPart: Int
-    val secondPart: Int
-    val thirdPart: Int
-    try {
-        thirdPart = if (parts[2].toInt() > 0) parts[2].toInt() else return ""
-        secondPart = when (parts[1]) {
-            "января" -> 1
-            "февраля" -> 2
-            "марта" -> 3
-            "апреля" -> 4
-            "мая" -> 5
-            "июня" -> 6
-            "июля" -> 7
-            "августа" -> 8
-            "сентября" -> 9
-            "октября" -> 10
-            "ноября" -> 11
-            "декабря" -> 12
-            else -> return ""
-        }
-        val flag = if (thirdPart % 400 == 0 || thirdPart % 4 == 0
-            && thirdPart % 100 != 0
-        ) 1 else 0
-        firstPart = when {
-            (secondPart == 1 || secondPart == 3 || secondPart == 5 || secondPart == 7
-                    || secondPart == 8 || secondPart == 10 || secondPart == 12)
-                    && parts[0].toInt() in 1..31 -> parts[0].toInt()
-            (secondPart == 4 || secondPart == 6 || secondPart == 9 || secondPart == 11)
-                    && parts[0].toInt() in 1..30 -> parts[0].toInt()
-            secondPart == 2 && (flag == 1 && parts[0].toInt() in 1..29
-                    || flag == 0 && parts[0].toInt() in 1..28) -> parts[0].toInt()
-            else -> return ""
-        }
-    } catch (e: NumberFormatException) {
-        return ""
-    }
-    return String.format("%02d.%02d.%d", firstPart, secondPart, thirdPart)
+    val days: Int
+    val month: Int
+    val year: Int
+    year = if (parts[2].toIntOrNull() == null) return "" else parts[2].toInt()
+    month = strToInt[parts[1]] ?: return ""
+    days = if (parts[0].toInt() in 1..daysInMonth(month, year)) parts[0].toInt() else return ""
+    return String.format("%02d.%02d.%d", days, month, year)
 }
 
 /**
@@ -133,45 +109,19 @@ fun dateStrToDigit(str: String): String {
  */
 fun dateDigitToStr(digital: String): String {
     val parts = digital.split(".")
+    val intToStr = mapOf(
+        1 to "января", 2 to "февраля", 3 to "марта", 4 to "апреля", 5 to "мая", 6 to "июня",
+        7 to "июля", 8 to "августа", 9 to "сентября", 10 to "октября", 11 to "ноября", 12 to "декабря"
+    )
     if (parts.size != 3) return ""
-    var firstPart: String
-    val secondPart: String
-    val thirdPart: String
-    try {
-        thirdPart = if (parts[2].toInt() > 0) parts[2] else return ""
-        secondPart = when (parts[1].toInt()) {
-            1 -> "января"
-            2 -> "февраля"
-            3 -> "марта"
-            4 -> "апреля"
-            5 -> "мая"
-            6 -> "июня"
-            7 -> "июля"
-            8 -> "августа"
-            9 -> "сентября"
-            10 -> "октября"
-            11 -> "ноября"
-            12 -> "декабря"
-            else -> return ""
-        }
-        val flag = if (parts[2].toInt() % 400 == 0 || parts[2].toInt() % 4 == 0
-            && parts[2].toInt() % 100 != 0
-        ) 1 else 0
-        firstPart = when {
-            (secondPart == "января" || secondPart == "марта" || secondPart == "мая" || secondPart == "июля"
-                    || secondPart == "августа" || secondPart == "октября" || secondPart == "декабря")
-                    && parts[0].toInt() in 1..31 -> parts[0]
-            (secondPart == "апреля" || secondPart == "июня" || secondPart == "сентября" || secondPart == "ноября")
-                    && parts[0].toInt() in 1..30 -> parts[0]
-            secondPart == "февраля" && (flag == 1 && parts[0].toInt() in 1..29
-                    || flag == 0 && parts[0].toInt() in 1..28) -> parts[0]
-            else -> return ""
-        }
-        if (firstPart.toInt() < 10) firstPart = firstPart.drop(1)
-    } catch (e: NumberFormatException) {
-        return ""
-    }
-    return String.format("%s %s %s", firstPart, secondPart, thirdPart)
+    var days: String
+    val month: String
+    val year: String
+    year = if (parts[2].toIntOrNull() == null) return "" else parts[2]
+    month = if (parts[1].toIntOrNull() == null) return "" else intToStr[parts[1].toInt()] ?: return ""
+    days = if (parts[0].toInt() in 1..daysInMonth(parts[1].toInt(), year.toInt())) parts[0] else return ""
+    if (days.toInt() < 10) days = days.drop(1)
+    return String.format("%s %s %s", days, month, year)
 }
 
 /**
@@ -189,25 +139,26 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    var result = ""
-    var flagOpen = 0
+    var flagOpen = false
     var count = 0
+    val result = StringBuilder()
     for (i in phone.indices) {
         when (phone[i]) {
             '+' -> {
-                if (result.isEmpty()) result += phone[i] else return ""
+                if (result.isEmpty()) result.append(phone[i]) else return ""
             }
-            '(' -> flagOpen = 1
-            ')' -> if (flagOpen == 0 || count == 0) return "" else continue
-            in "0123456789" -> {
-                if (flagOpen == 1) count++
-                result += phone[i]
-            }
+            '(' -> flagOpen = true
+            ')' -> if (!flagOpen || count == 0) return "" else continue
             in "- " -> continue
-            else -> return ""
+            else -> {
+                if (phone[i].isDigit()) {
+                    if (flagOpen) count++
+                    result.append(phone[i])
+                } else return ""
+            }
         }
     }
-    return result
+    return result.toString()
 }
 
 /**
@@ -245,25 +196,23 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    if (expression.isEmpty() || expression[0] == ' ') throw IllegalArgumentException()
+    if (expression.isEmpty() || expression[0] == ' ')
+        throw IllegalArgumentException("violation of the input string format")
     val setOfDigits = expression.split(' ')
     var result = 0
     var digit: Int
-    var flag = 1
+    var flag = true
     for (i in setOfDigits.indices) {
         when {
             i % 2 == 0 -> {
-                digit = try {
-                    if (setOfDigits[i][0] == '+' || setOfDigits[i][0] == '-') throw IllegalArgumentException()
-                    setOfDigits[i].toInt()
-                } catch (e: NumberFormatException) {
-                    throw IllegalArgumentException()
-                }
-                if (flag == 1) result += digit else result -= digit
+                digit = if (setOfDigits[i][0] == '+' || setOfDigits[i][0] == '-')
+                    throw IllegalArgumentException("violation of the input string format")
+                else setOfDigits[i].toInt()
+                if (flag) result += digit else result -= digit
             }
             i % 2 == 1 -> if (setOfDigits[i] == "+" || setOfDigits[i] == "-")
-                flag = if (setOfDigits[i] == "+") 1 else 0
-            else throw IllegalArgumentException()
+                flag = setOfDigits[i] == "+"
+            else throw IllegalArgumentException("violation of the input string format")
 
         }
     }
@@ -319,11 +268,9 @@ fun fromRoman(roman: String): Int {
     var secondDigit = 0
     val romanToDigit = mapOf('M' to 1000, 'D' to 500, 'C' to 100, 'L' to 50, 'X' to 10, 'V' to 5, 'I' to 1)
     for (i in roman.indices) {
-        val firstDigit = if (romanToDigit.contains(roman[i])) romanToDigit.getValue(roman[i]) else return -1
-        if (i == 0) {
-            if (roman.length == 1) return firstDigit
-            else secondDigit = firstDigit
-        } else {
+        val firstDigit = romanToDigit[roman[i]] ?: return -1
+        if (i == 0) secondDigit = firstDigit
+        else {
             when {
                 roman[i - 1] == roman[i] -> result += firstDigit
                 romanToDigit.getValue(roman[i - 1]) > firstDigit -> {
@@ -380,68 +327,53 @@ fun fromRoman(roman: String): Int {
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (commands.length == 1) if (commands[0] !in " -+><") throw IllegalArgumentException()
-    val result = mutableListOf<Int>()
-    var currentCell = 0
-    while (currentCell <= cells - 1) {
-        result.add(0)
-        currentCell++
-    }
+    val result = MutableList(cells) { 0 }
     if (commands.isEmpty()) return result
 
-    var currentClose = 0
-    var currentOpen = 0
-    var flag = 0
     val mapOfSquareBracket = mutableMapOf<Int, Int>()
-    for (i in 0 until commands.length - 1) {
-        var repetitive = 0
-        if (commands[i] in " -+><[]") {
-            if (commands[i] == '[') {
-                flag = 1
-                for (j in i + 1 until commands.length)
-                    when (commands[j]) {
-                        '[' -> repetitive++
-                        ']' -> if (repetitive == 0) {
-                            mapOfSquareBracket[i] = j
-                            mapOfSquareBracket[j] = i
-                            flag = 0
-                            break
-                        } else repetitive--
-                    }
+    val stack = Stack<Int>()
+    for (i in commands.indices)
+        when (commands[i]) {
+            in " -+><" -> continue
+            '[' -> {
+                stack.push(i)
             }
-        } else throw IllegalArgumentException()
-        currentOpen += if (commands[i] == '[') 1 else 0
-        currentClose += if (commands[i] == ']') 1 else 0
-        if (flag == 1) throw IllegalArgumentException()
-    }
-    if (commands.last() !in " +-><[]") throw IllegalArgumentException()
-    if (commands.last() == '[') currentOpen++ else if (commands.last() == ']') currentClose++
-    if (currentClose != currentOpen) throw IllegalArgumentException()
+            ']' -> {
+                if (stack.isEmpty()) throw IllegalArgumentException("violation of the input string format")
+                if (commands[stack.lastElement()] == '[') {
+                    mapOfSquareBracket[i] = stack.lastElement()
+                    mapOfSquareBracket[stack.lastElement()] = i
+                    stack.pop()
+                    continue
+                } else throw IllegalArgumentException("violation of the input string format")
+            }
+            else -> throw IllegalArgumentException("violation of the input string format")
+        }
+    if (!stack.isEmpty()) throw IllegalArgumentException("violation of the input string format")
 
-    currentCell = cells / 2
+    var currentCell = cells / 2
     var numberOfActions = 0
     var index = 0
-    println(currentCell)
     while (index in commands.indices) {
         if (numberOfActions == limit) return result
         when (commands[index]) {
             '>' -> {
                 currentCell++
-                if (currentCell >= cells) throw IllegalStateException()
+                if (currentCell >= cells) throw IllegalStateException("violation of the input string format")
             }
             '<' -> {
                 currentCell--
-                if (currentCell < 0) throw IllegalStateException()
+                if (currentCell < 0) throw IllegalStateException("violation of the input string format")
             }
             '+' -> result[currentCell]++
             '-' -> result[currentCell]--
             '[' -> if (result[currentCell] == 0) {
-                index = mapOfSquareBracket[index]!!
+                index = mapOfSquareBracket.getValue(index)
             }
             ']' -> if (result[currentCell] != 0) index = mapOfSquareBracket.getValue(index)
         }
         numberOfActions++
         index++
     }
-    println(currentCell)
     return result
 }
