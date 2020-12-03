@@ -123,19 +123,12 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  */
 fun sibilants(inputName: String, outputName: String) {
     val writer = File(outputName).printWriter()
-    val listOfIncorrectLetter = listOf('ы', 'я', 'ю', 'Ы', 'Я', 'Ю')
+    val mapOfIncorrectLetter = mapOf('ы' to 'и', 'я' to 'а', 'ю' to 'у', 'Ы' to 'И', 'Я' to 'А', 'Ю' to 'У')
     var lastLetter = ""
     for (char in File(inputName).readText()) {
-        if (char in listOfIncorrectLetter && lastLetter in "жЖшШчЧщЩ" && lastLetter != "") {
-            when (char) {
-                listOfIncorrectLetter[0] -> writer.print('и')
-                listOfIncorrectLetter[1] -> writer.print('а')
-                listOfIncorrectLetter[2] -> writer.print('у')
-                listOfIncorrectLetter[3] -> writer.print('И')
-                listOfIncorrectLetter[4] -> writer.print('А')
-                listOfIncorrectLetter[5] -> writer.print('У')
-                else -> print(char)
-            }
+        if (char in mapOfIncorrectLetter.keys && lastLetter in "жЖшШчЧщЩ" && lastLetter != "") {
+            writer.print(mapOfIncorrectLetter[char])
+            lastLetter = ""
         } else {
             lastLetter = char.toString()
             writer.print(char)
