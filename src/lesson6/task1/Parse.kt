@@ -88,12 +88,10 @@ fun dateStrToDigit(str: String): String {
         "июля" to 7, "августа" to 8, "сентября" to 9, "октября" to 10, "ноября" to 11, "декабря" to 12
     )
     if (parts.size != 3) return ""
-    val days: Int
-    val month: Int
-    val year: Int
-    year = if (parts[2].toIntOrNull() == null) return "" else parts[2].toInt()
-    month = strToInt[parts[1]] ?: return ""
-    days = if (parts[0].toInt() in 1..daysInMonth(month, year)) parts[0].toInt() else return ""
+    val year = parts[2].toIntOrNull() ?: return ""
+    val month = strToInt[parts[1]] ?: return ""
+    val number = if (parts[0].toIntOrNull() == null) return "" else parts[0].toInt()
+    val days = if (number in 1..daysInMonth(month, year)) number else return ""
     return String.format("%02d.%02d.%d", days, month, year)
 }
 
@@ -114,13 +112,10 @@ fun dateDigitToStr(digital: String): String {
         7 to "июля", 8 to "августа", 9 to "сентября", 10 to "октября", 11 to "ноября", 12 to "декабря"
     )
     if (parts.size != 3) return ""
-    var days: String
-    val month: String
-    val year: String
-    year = if (parts[2].toIntOrNull() == null) return "" else parts[2]
-    month = if (parts[1].toIntOrNull() == null) return "" else intToStr[parts[1].toInt()] ?: return ""
-    days = if (parts[0].toInt() in 1..daysInMonth(parts[1].toInt(), year.toInt())) parts[0] else return ""
-    if (days.toInt() < 10) days = days.drop(1)
+    val year = if (parts[2].toIntOrNull() == null) return "" else parts[2]
+    val month = if (parts[1].toIntOrNull() == null) return "" else intToStr[parts[1].toInt()] ?: return ""
+    val number = if (parts[0].toIntOrNull() == null) return "" else parts[0].toInt()
+    val days = if (number in 1..daysInMonth(parts[1].toInt(), year.toInt())) number.toString() else return ""
     return String.format("%s %s %s", days, month, year)
 }
 
@@ -200,12 +195,13 @@ fun plusMinus(expression: String): Int {
         throw IllegalArgumentException("violation of the input string format")
     val setOfDigits = expression.split(' ')
     var result = 0
-    var digit: Int
     var flag = true
     for (i in setOfDigits.indices) {
         when {
             i % 2 == 0 -> {
-                digit = if (setOfDigits[i][0] == '+' || setOfDigits[i][0] == '-')
+                if (setOfDigits[i].toIntOrNull() == null)
+                    throw IllegalArgumentException("violation of the input string format")
+                val digit = if (setOfDigits[i][0] == '+' || setOfDigits[i][0] == '-')
                     throw IllegalArgumentException("violation of the input string format")
                 else setOfDigits[i].toInt()
                 if (flag) result += digit else result -= digit
