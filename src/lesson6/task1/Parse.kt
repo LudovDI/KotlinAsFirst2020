@@ -90,7 +90,7 @@ fun dateStrToDigit(str: String): String {
     if (parts.size != 3) return ""
     val year = parts[2].toIntOrNull() ?: return ""
     val month = strToInt[parts[1]] ?: return ""
-    val number = if (parts[0].toIntOrNull() == null) return "" else parts[0].toInt()
+    val number = parts[0].toIntOrNull() ?: return ""
     val days = if (number in 1..daysInMonth(month, year)) number else return ""
     return String.format("%02d.%02d.%d", days, month, year)
 }
@@ -112,10 +112,10 @@ fun dateDigitToStr(digital: String): String {
         7 to "июля", 8 to "августа", 9 to "сентября", 10 to "октября", 11 to "ноября", 12 to "декабря"
     )
     if (parts.size != 3) return ""
-    val year = if (parts[2].toIntOrNull() == null) return "" else parts[2]
-    val month = if (parts[1].toIntOrNull() == null) return "" else intToStr[parts[1].toInt()] ?: return ""
-    val number = if (parts[0].toIntOrNull() == null) return "" else parts[0].toInt()
-    val days = if (number in 1..daysInMonth(parts[1].toInt(), year.toInt())) number.toString() else return ""
+    val year = parts[2].toIntOrNull() ?: return ""
+    val month = intToStr[parts[1].toIntOrNull() ?: return ""] ?: return ""
+    val number = parts[0].toIntOrNull() ?: return ""
+    val days = if (number in 1..daysInMonth(parts[1].toInt(), year)) number else return ""
     return String.format("%s %s %s", days, month, year)
 }
 

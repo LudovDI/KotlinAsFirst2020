@@ -88,37 +88,19 @@ fun deleteMarked(inputName: String, outputName: String) {
  */
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
-    val reader = File(inputName).bufferedReader()
-    fun numberOfOccurrences(firstWord: String, secondWord: String): Int {
-        if (firstWord.length < secondWord.length) return 0
-        var number = 0
-        var i = 0
-        var j = 0
-        while (i in firstWord.indices && j in secondWord.indices) {
-            when {
-                firstWord[i].equals(secondWord[j], true) ->
-                    if (j == secondWord.lastIndex) {
-                        i -= j
-                        j = -1
-                        number++
-                    }
-                j != 0 -> {
-                    i--
-                    j = -1
-                }
-                else -> j--
-            }
-            i++
-            j++
-        }
-        return number
-    }
+    val reader = File(inputName).reader()
     for (stringFromSubstrings in substrings) {
         var number = 0
-        for (line in File(inputName).readLines())
-            for (wordFromText in line.split(Regex("\\s+"))) {
-                number += numberOfOccurrences(wordFromText, stringFromSubstrings)
+        var text = ""
+        for (char in File(inputName).readText()) {
+            text += char
+            if (text.length == stringFromSubstrings.length) {
+                text = if (text.equals(stringFromSubstrings, true)) {
+                    number++
+                    text.drop(1)
+                } else text.drop(1)
             }
+        }
         result[stringFromSubstrings] = number
     }
     reader.close()
@@ -144,7 +126,7 @@ fun sibilants(inputName: String, outputName: String) {
     val listOfIncorrectLetter = listOf('ы', 'я', 'ю', 'Ы', 'Я', 'Ю')
     var lastLetter = ""
     for (char in File(inputName).readText()) {
-        if (char in listOfIncorrectLetter && lastLetter in "жЖшШчЧщЩ") {
+        if (char in listOfIncorrectLetter && lastLetter in "жЖшШчЧщЩ" && lastLetter != "") {
             when (char) {
                 listOfIncorrectLetter[0] -> writer.print('и')
                 listOfIncorrectLetter[1] -> writer.print('а')
@@ -183,8 +165,8 @@ fun centerFile(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     var max = 0
     for (line in File(inputName).readLines()) {
-        if (line.isEmpty()) continue
-        if (line.length > max) max = line.length
+        if (line.trim().isEmpty()) continue
+        if (line.trim().length > max) max = line.trim().length
     }
 
     for (line in File(inputName).readLines()) {
