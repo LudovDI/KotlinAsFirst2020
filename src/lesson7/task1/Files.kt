@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import java.util.Stack
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -89,19 +90,18 @@ fun deleteMarked(inputName: String, outputName: String) {
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
     val reader = File(inputName).reader()
-    for (stringFromSubstrings in substrings) {
+    val text = File(inputName).readText().toLowerCase()
+    for (substring in substrings) {
+
         var number = 0
-        var text = ""
-        for (char in File(inputName).readText()) {
-            text += char
-            if (text.length == stringFromSubstrings.length) {
-                text = if (text.equals(stringFromSubstrings, true)) {
-                    number++
-                    text.drop(1)
-                } else text.drop(1)
-            }
+        val index = text.indexOf(substring.toLowerCase())
+        if (index == -1) {
+            result[substring] = 0
+            continue
         }
-        result[stringFromSubstrings] = number
+        for (i in index..text.length - substring.length)
+            if (text.substring(i, i + substring.length) == substring.toLowerCase()) number++
+        result[substring] = number
     }
     reader.close()
     return result
@@ -124,13 +124,13 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
 fun sibilants(inputName: String, outputName: String) {
     val writer = File(outputName).printWriter()
     val mapOfIncorrectLetter = mapOf('ы' to 'и', 'я' to 'а', 'ю' to 'у', 'Ы' to 'И', 'Я' to 'А', 'Ю' to 'У')
-    var lastLetter = ""
+    var lastLetter = ' '
     for (char in File(inputName).readText()) {
-        if (char in mapOfIncorrectLetter.keys && lastLetter in "жЖшШчЧщЩ" && lastLetter != "") {
+        if (char in mapOfIncorrectLetter.keys && lastLetter in "жЖшШчЧщЩ") {
             writer.print(mapOfIncorrectLetter[char])
-            lastLetter = ""
+            lastLetter = ' '
         } else {
-            lastLetter = char.toString()
+            lastLetter = char
             writer.print(char)
         }
     }
@@ -158,7 +158,6 @@ fun centerFile(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     var max = 0
     for (line in File(inputName).readLines()) {
-        if (line.trim().isEmpty()) continue
         if (line.trim().length > max) max = line.trim().length
     }
 
@@ -199,46 +198,7 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-    var max = 0
-    val listOfSum = mutableListOf<Int>()
-    for (line in File(inputName).readLines()) {
-        if (line.isEmpty()) continue
-        if (line.trim().length > max) max = line.trim().length
-        var sum = 0
-        for (word in line.split(' ')) if (word.isNotEmpty()) sum++
-        listOfSum.add(sum)
-    }
-
-    var index = 0
-    for (line in File(inputName).readLines()) {
-        if (line.isEmpty()) {
-            writer.newLine()
-            continue
-        }
-        val newLine = line.trim()
-        val list = newLine.split(' ')
-        if (listOfSum[index] == 1) {
-            writer.write(newLine)
-            writer.newLine()
-            index++
-            continue
-        }
-
-        val numberOfSpaces = (max - newLine.length + listOfSum[index] - 1) / (listOfSum[index] - 1)
-        for (i in list.indices) {
-            if (i == list.lastIndex) {
-                writer.write(list[i])
-                break
-            }
-            val newWord = if (i + 1 <= (max - newLine.length + listOfSum[index] - 1) % (listOfSum[index] - 1))
-                list[i].padEnd(list[i].length + numberOfSpaces + 1) else list[i].padEnd(list[i].length + numberOfSpaces)
-            writer.write(newWord)
-        }
-        writer.newLine()
-        index++
-    }
-    writer.close()
+    TODO()
 }
 
 /**
@@ -376,7 +336,103 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    writer.write("<html>")
+    writer.newLine()
+    writer.write("<body>")
+    writer.newLine()
+    val stackBI = Stack<String>()
+    val stackS = Stack<String>()
+    val lastLetter = Stack<Char>()
+    if (File(inputName).readText().isNotEmpty()) {
+        writer.write("<p>")
+        writer.newLine()
+        for (line in File(inputName).readLines()) {
+            if (line.isEmpty()) {
+                writer.write("</p>")
+                writer.write("<p>")
+                writer.newLine()
+                continue
+            }
+            for (char in line) {
+                when (char) {
+                    '*' -> {
+                        if (lastLetter.lastElement() != '*') {
+                            when {
+                                stackBI.isEmpty() -> stackBI.push("<i>")
+                                stackBI.lastElement() == "<i>" || stackBI.lastElement() == "<b>" -> stackBI.push("</i>")
+                                else -> stackBI.push("<i>")
+                            }
+                        } else when (stackBI.lastElement()) {
+                            "<i>" -> {
+                                stackBI.pop()
+                                stackBI.push("<b>")
+                            }
+                            "<b>" -> {
+                                stackBI.push("<i>")
+                            }
+                            "</i>" -> {
+                                stackBI.pop()
+                                stackBI.push("</b>")
+                            }
+                            "</b>" -> {
+                                stackBI.push("</i>")
+                            }
+                        }
+                    }
+                    '~' -> {
+                        if (lastLetter.lastElement() == '*')
+                            writer.write(stackBI.lastElement())
+                        if (lastLetter.lastElement() != '~') {
+                            when {
+                                stackS.isEmpty() -> stackS.push("<s>")
+                                stackS.lastElement() == "<s>" -> stackS.push("</s>")
+                                else -> stackS.push("<s>")
+                            }
+                            writer.write(stackS.lastElement())
+                        }
+                    }
+                    else -> {
+                        if (!lastLetter.isEmpty())
+                            if (lastLetter.lastElement() == '*') {
+                                if (stackBI.size == 1) writer.write(stackBI.lastElement()) else {
+                                    val currentItem = stackBI.lastElement()
+                                    stackBI.pop()
+                                    val penultimateItem = stackBI.lastElement()
+                                    when {
+                                        currentItem == "</b>" && penultimateItem == "<i>" -> {
+                                            stackBI.push(penultimateItem)
+                                            stackBI.push("<b>")
+                                            writer.write(stackBI.lastElement())
+                                        }
+                                        currentItem == "</i>" && penultimateItem == "</b>" -> {
+                                            stackBI.push(penultimateItem)
+                                            stackBI.push(currentItem)
+                                            writer.write(penultimateItem)
+                                            writer.write(currentItem)
+                                        }
+                                        else -> {
+                                            stackBI.push(penultimateItem)
+                                            stackBI.push(currentItem)
+                                            writer.write(stackBI.lastElement())
+                                        }
+                                    }
+                                }
+                            }
+                        writer.write(char.toString())
+                    }
+                }
+                lastLetter.push(char)
+            }
+            writer.newLine()
+        }
+    }
+    writer.write("</p>")
+    writer.newLine()
+    writer.write("</body>")
+    writer.newLine()
+    writer.write("</html>")
+    writer.close()
 }
 
 /**
