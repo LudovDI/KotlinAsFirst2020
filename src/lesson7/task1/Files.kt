@@ -348,6 +348,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     if (File(inputName).readText().isEmpty()) {
         writer.write("<p>")
         writer.newLine()
+        writer.write("</p>")
+        writer.newLine()
     } else
         for (line in File(inputName).readLines()) {
             if (line.trim().isEmpty()) {
@@ -451,8 +453,10 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             }
             writer.newLine()
         }
-    writer.write("</p>")
-    writer.newLine()
+    if (!stackForParagraph.isEmpty()) {
+        writer.write("</p>")
+        writer.newLine()
+    }
     writer.write("</body>")
     writer.newLine()
     writer.write("</html>")
