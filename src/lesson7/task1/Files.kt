@@ -345,108 +345,114 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val stack = Stack<String>()
     val lastLetter = Stack<Char>()
     val stackForParagraph = Stack<String>()
-    for (line in File(inputName).readLines()) {
-        if (line.trim().isEmpty()) {
-            if (stackForParagraph.isEmpty()) continue
-            else {
-                stackForParagraph.pop()
-                writer.write("</p>")
-                writer.newLine()
-            }
-        } else if (stackForParagraph.isEmpty()) {
-            writer.write("<p>")
-            writer.newLine()
-            stackForParagraph.push("<p>")
-        }
-        val list = mutableListOf<Int>()
-        var index = 0
-        for (char in line) {
-            if (char == '*') when {
-                list.isEmpty() -> list.add(1)
-                lastLetter.lastElement() == '*' -> list[index]++
-                else -> {
-                    index++
-                    list.add(1)
-                }
-            }
-            lastLetter.push(char)
-        }
-        lastLetter.push(' ')
-        index = 0
-        for (char in line) {
-            when (char) {
-                '*' ->
-                    if (lastLetter.lastElement() != '*') {
-                        when (list[index]) {
-                            1 -> when {
-                                stack.isEmpty() -> {
-                                    stack.push("<i>")
-                                    writer.write("<i>")
-                                }
-                                stack.lastElement() == "<i>" -> {
-                                    stack.pop()
-                                    writer.write("</i>")
-                                }
-                                else -> {
-                                    stack.push("<i>")
-                                    writer.write("<i>")
-                                }
-                            }
-                            2 -> when {
-                                stack.isEmpty() -> {
-                                    stack.push("<b>")
-                                    writer.write("<b>")
-                                }
-                                stack.lastElement() == "<b>" -> {
-                                    stack.pop()
-                                    writer.write("</b>")
-                                }
-                                else -> {
-                                    stack.push("<b>")
-                                    writer.write("<b>")
-                                }
-                            }
-                            else -> when {
-                                stack.isEmpty() -> {
-                                    stack.push("<b>")
-                                    stack.push("<i>")
-                                    writer.write("<b><i>")
-                                }
-                                stack.lastElement() == "<b>" -> {
-                                    writer.write("</b></i>")
-                                    stack.pop()
-                                    stack.pop()
-                                }
-                                else -> {
-                                    writer.write("</i></b>")
-                                    stack.pop()
-                                    stack.pop()
-                                }
-                            }
-                        }
-                        index++
-                    }
-                '~' -> if (!lastLetter.isEmpty())
-                    if (lastLetter.lastElement() == '~') when {
-                        stack.isEmpty() -> {
-                            stack.push("<s>")
-                            writer.write("<s>")
-                        }
-                        stack.lastElement() == "<s>" -> {
-                            stack.pop()
-                            writer.write("</s>")
-                        }
-                        else -> {
-                            stack.push("<s>")
-                            writer.write("<s>")
-                        }
-                    }
-                else -> writer.write(char.toString())
-            }
-            lastLetter.push(char)
-        }
+    if (File(inputName).readText().isEmpty()) {
+        writer.write("<p>")
         writer.newLine()
-    }
+        writer.write("</p>")
+        writer.newLine()
+    } else
+        for (line in File(inputName).readLines()) {
+            if (line.trim().isEmpty()) {
+                if (stackForParagraph.isEmpty()) continue
+                else {
+                    stackForParagraph.pop()
+                    writer.write("</p>")
+                    writer.newLine()
+                }
+            } else if (stackForParagraph.isEmpty()) {
+                writer.write("<p>")
+                writer.newLine()
+                stackForParagraph.push("<p>")
+            }
+            val list = mutableListOf<Int>()
+            var index = 0
+            for (char in line) {
+                if (char == '*') when {
+                    list.isEmpty() -> list.add(1)
+                    lastLetter.lastElement() == '*' -> list[index]++
+                    else -> {
+                        index++
+                        list.add(1)
+                    }
+                }
+                lastLetter.push(char)
+            }
+            lastLetter.push(' ')
+            index = 0
+            for (char in line) {
+                when (char) {
+                    '*' ->
+                        if (lastLetter.lastElement() != '*') {
+                            when (list[index]) {
+                                1 -> when {
+                                    stack.isEmpty() -> {
+                                        stack.push("<i>")
+                                        writer.write("<i>")
+                                    }
+                                    stack.lastElement() == "<i>" -> {
+                                        stack.pop()
+                                        writer.write("</i>")
+                                    }
+                                    else -> {
+                                        stack.push("<i>")
+                                        writer.write("<i>")
+                                    }
+                                }
+                                2 -> when {
+                                    stack.isEmpty() -> {
+                                        stack.push("<b>")
+                                        writer.write("<b>")
+                                    }
+                                    stack.lastElement() == "<b>" -> {
+                                        stack.pop()
+                                        writer.write("</b>")
+                                    }
+                                    else -> {
+                                        stack.push("<b>")
+                                        writer.write("<b>")
+                                    }
+                                }
+                                else -> when {
+                                    stack.isEmpty() -> {
+                                        stack.push("<b>")
+                                        stack.push("<i>")
+                                        writer.write("<b><i>")
+                                    }
+                                    stack.lastElement() == "<b>" -> {
+                                        writer.write("</b></i>")
+                                        stack.pop()
+                                        stack.pop()
+                                    }
+                                    else -> {
+                                        writer.write("</i></b>")
+                                        stack.pop()
+                                        stack.pop()
+                                    }
+                                }
+                            }
+                            index++
+                        }
+                    '~' -> if (!lastLetter.isEmpty())
+                        if (lastLetter.lastElement() == '~') when {
+                            stack.isEmpty() -> {
+                                stack.push("<s>")
+                                writer.write("<s>")
+                            }
+                            stack.lastElement() == "<s>" -> {
+                                stack.pop()
+                                writer.write("</s>")
+                            }
+                            else -> {
+                                stack.push("<s>")
+                                writer.write("<s>")
+                            }
+                        }
+                    else -> writer.write(char.toString())
+                }
+                lastLetter.push(char)
+            }
+            writer.newLine()
+        }
     writer.write("</p>")
     writer.newLine()
     writer.write("</body>")
