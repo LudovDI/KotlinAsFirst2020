@@ -346,7 +346,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val lastLetter = Stack<Char>()
     val stackForParagraph = Stack<String>()
     for (line in File(inputName).readLines()) {
-        if (line.isEmpty()) {
+        if (line.trim().isEmpty()) {
             if (stackForParagraph.isEmpty()) continue
             else {
                 stackForParagraph.pop()
