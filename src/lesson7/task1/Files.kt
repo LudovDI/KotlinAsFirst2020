@@ -344,15 +344,28 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
 
     val stack = Stack<String>()
     val lastLetter = Stack<Char>()
-    if (File(inputName).readText().isNotEmpty()) {
-        writer.write("<p>")
-        writer.newLine()
+    val stackOfEmptyLine = Stack<String>()
+    if (File(inputName).readText().isNotEmpty())
         for (line in File(inputName).readLines()) {
             if (line.isEmpty()) {
-                writer.write("</p>")
+                when {
+                    stackOfEmptyLine.isEmpty() -> {
+                        stackOfEmptyLine.push("<p>")
+                        writer.write("<p>")
+                        writer.newLine()
+                    }
+                    else -> {
+                        writer.write("</p>")
+                        writer.newLine()
+                        writer.write("<p>")
+                        writer.newLine()
+                    }
+                }
+                continue
+            } else if (stackOfEmptyLine.isEmpty()) {
                 writer.write("<p>")
                 writer.newLine()
-                continue
+                stackOfEmptyLine.push("<p>")
             }
             val list = mutableListOf<Int>()
             var index = 0
@@ -443,7 +456,6 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             }
             writer.newLine()
         }
-    }
     writer.write("</p>")
     writer.newLine()
     writer.write("</body>")
