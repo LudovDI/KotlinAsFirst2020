@@ -613,7 +613,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  * Пример (для lhv == 19935, rhv == 22):
 19935 | 22
--198     906
+-198    906
 ----
 13
 -0
@@ -627,6 +627,51 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val result = (lhv / rhv).toString()
+    var remainder = ""
+    var index = 0
+    var hyphen = ""
+    var currentOfSpaces = 0
+    for (i in result.indices) {
+        val numeric = result[i].toString().toInt()
+        val digit = "-" + (rhv * numeric).toString()
+        if (i == 0) {
+            var number = lhv.toString().substring(0, digit.length - 1)
+            if (number.toInt() < -digit.toInt()) number += lhv.toString()[digit.length - 2]
+            remainder = (number.toInt() + digit.toInt()).toString()
+            index = number.length - 1
+            val private = if (number.length == digit.length) {
+                writer.write("$lhv | $rhv")
+                writer.newLine()
+                result.padStart(result.length + lhv.toString().length - digit.length + 3)
+            } else {
+                writer.write(" $lhv | $rhv")
+                writer.newLine()
+                result.padStart(result.length + lhv.toString().length - digit.length + 4)
+            }
+            writer.write("$digit$private")
+            writer.newLine()
+
+        } else {
+            currentOfSpaces++
+            remainder += lhv.toString()[index]
+            writer.write(remainder.padStart(currentOfSpaces))
+            writer.newLine()
+            writer.write(digit.padStart(currentOfSpaces))
+            writer.newLine()
+        }
+        hyphen = if (digit.length >= remainder.length) hyphen.padStart(digit.length, '-') else
+            hyphen.padStart(remainder.length, '-')
+        writer.write(hyphen.padStart(currentOfSpaces))
+        writer.newLine()
+        if (i != 0) remainder = (remainder.toInt() + digit.toInt()).toString()
+        if (i == 0) currentOfSpaces = digit.length
+        index++
+        hyphen = ""
+    }
+
+    writer.write(remainder.padStart(currentOfSpaces))
+    writer.close()
 }
 
