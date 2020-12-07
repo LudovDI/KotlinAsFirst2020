@@ -343,7 +343,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     writer.newLine()
 
     val stack = Stack<String>()
-    val lastLetter = Stack<Char>()
+    var lastLetter = ' '
     val stackForParagraph = Stack<String>()
     if (File(inputName).readText().isEmpty()) {
         writer.write("<p>")
@@ -358,6 +358,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                     stackForParagraph.pop()
                     writer.write("</p>")
                     writer.newLine()
+                    continue
                 }
             } else if (stackForParagraph.isEmpty()) {
                 writer.write("<p>")
@@ -369,20 +370,20 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             for (char in line) {
                 if (char == '*') when {
                     list.isEmpty() -> list.add(1)
-                    lastLetter.lastElement() == '*' -> list[index]++
+                    lastLetter == '*' -> list[index]++
                     else -> {
                         index++
                         list.add(1)
                     }
                 }
-                lastLetter.push(char)
+                lastLetter = char
             }
-            lastLetter.push(' ')
+            lastLetter = ' '
             index = 0
             for (char in line) {
                 when (char) {
                     '*' ->
-                        if (lastLetter.lastElement() != '*') {
+                        if (lastLetter != '*') {
                             when (list[index]) {
                                 1 -> when {
                                     stack.isEmpty() -> {
@@ -432,24 +433,23 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                             }
                             index++
                         }
-                    '~' -> if (!lastLetter.isEmpty())
-                        if (lastLetter.lastElement() == '~') when {
-                            stack.isEmpty() -> {
-                                stack.push("<s>")
-                                writer.write("<s>")
-                            }
-                            stack.lastElement() == "<s>" -> {
-                                stack.pop()
-                                writer.write("</s>")
-                            }
-                            else -> {
-                                stack.push("<s>")
-                                writer.write("<s>")
-                            }
+                    '~' -> if (lastLetter == '~') when {
+                        stack.isEmpty() -> {
+                            stack.push("<s>")
+                          writer.write("<s>")
                         }
+                        stack.lastElement() == "<s>" -> {
+                            stack.pop()
+                            writer.write("</s>")
+                        }
+                        else -> {
+                            stack.push("<s>")
+                            writer.write("<s>")
+                        }
+                    }
                     else -> writer.write(char.toString())
                 }
-                lastLetter.push(char)
+                lastLetter = char
             }
             writer.newLine()
         }
@@ -633,23 +633,19 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     var index = 0
     var hyphen = ""
     var currentOfSpaces = 0
+    var dividend = ""
     for (i in result.indices) {
         val numeric = result[i].toString().toInt()
         val digit = "-" + (rhv * numeric).toString()
         if (i == 0) {
             var number = lhv.toString().substring(0, digit.length - 1)
             if (number.toInt() < -digit.toInt()) number += lhv.toString()[digit.length - 2]
-            remainder = (number.toInt() + digit.toInt()).toString()
+            remainder = if (digit == "-0") lhv.toString() else (number.toInt() + digit.toInt()).toString()
             index = number.length - 1
-            val private = if (number.length == digit.length) {
-                writer.write("$lhv | $rhv")
-                writer.newLine()
-                result.padStart(result.length + lhv.toString().length - digit.length + 3)
-            } else {
-                writer.write(" $lhv | $rhv")
-                writer.newLine()
-                result.padStart(result.length + lhv.toString().length - digit.length + 4)
-            }
+            dividend = if (number.length == digit.length) "$lhv" else " $lhv"
+            writer.write("$dividend | $rhv")
+            writer.newLine()
+            val private = result.padStart(result.length + dividend.length - digit.length + 3)
             writer.write("$digit$private")
             writer.newLine()
 
@@ -666,7 +662,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         writer.write(hyphen.padStart(currentOfSpaces))
         writer.newLine()
         if (i != 0) remainder = (remainder.toInt() + digit.toInt()).toString()
-        if (i == 0) currentOfSpaces = digit.length
+        if (i == 0) currentOfSpaces = if (digit == "-0") dividend.length else digit.length
         index++
         hyphen = ""
     }
