@@ -657,12 +657,12 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             writer.write(digit.padStart(currentOfSpaces))
             writer.newLine()
         }
+        if (i == 0) currentOfSpaces = if (digit == "-0") dividend.length else digit.length
         hyphen = if (digit.length >= remainder.length) hyphen.padStart(digit.length, '-') else
             hyphen.padStart(remainder.length, '-')
         writer.write(hyphen.padStart(currentOfSpaces))
         writer.newLine()
         if (i != 0) remainder = (remainder.toInt() + digit.toInt()).toString()
-        if (i == 0) currentOfSpaces = if (digit == "-0") dividend.length else digit.length
         index++
         hyphen = ""
     }
