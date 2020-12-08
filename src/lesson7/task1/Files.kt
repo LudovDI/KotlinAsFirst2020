@@ -93,10 +93,10 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     val text = File(inputName).readText().toLowerCase()
     for (substring in substrings) {
         var number = 0
-        var index = 0
-        while (text.indexOf(substring.toLowerCase(), index) != -1) {
+        var index = text.indexOf(substring.toLowerCase(), 0)
+        while (index != -1) {
             number++
-            index = text.indexOf(substring.toLowerCase(), index) + 1
+            index = text.indexOf(substring.toLowerCase(), index + 1)
         }
         result[substring] = number
     }
