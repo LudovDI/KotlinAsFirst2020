@@ -92,15 +92,12 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     val reader = File(inputName).reader()
     val text = File(inputName).readText().toLowerCase()
     for (substring in substrings) {
-
         var number = 0
-        val index = text.indexOf(substring.toLowerCase())
-        if (index == -1) {
-            result[substring] = 0
-            continue
+        var index = 0
+        while (text.indexOf(substring.toLowerCase(), index) != -1) {
+            number++
+            index = text.indexOf(substring.toLowerCase(), index) + 1
         }
-        for (i in index..text.length - substring.length)
-            if (text.substring(i, i + substring.length) == substring.toLowerCase()) number++
         result[substring] = number
     }
     reader.close()
@@ -646,18 +643,18 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val result = (lhv / rhv).toString()
     var remainder = ""
     var index = 0
-    var hyphen = ""
     var currentOfSpaces = 0
     var dividend = ""
     for (i in result.indices) {
         val numeric = result[i].toString().toInt()
         var digit = "-" + (rhv * numeric).toString()
+        var hyphen = ""
         if (i == 0) {
             var number = if (digit == "-0") lhv.toString() else lhv.toString().substring(0, digit.length - 1)
             if (number.toInt() < -digit.toInt()) number += lhv.toString()[digit.length - 1]
             remainder = if (digit == "-0") number else (number.toInt() + digit.toInt()).toString()
             index = number.length - 1
-            dividend = if (number.length == digit.length || number.length > digit.length) "$lhv" else " $lhv"
+            dividend = if (number.length >= digit.length) "$lhv" else " $lhv"
             writer.write("$dividend | $rhv")
             writer.newLine()
             val private =
@@ -682,7 +679,6 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         writer.newLine()
         if (i != 0) remainder = (remainder.toInt() + digit.toInt()).toString()
         index++
-        hyphen = ""
     }
 
     writer.write(remainder.padStart(currentOfSpaces))
