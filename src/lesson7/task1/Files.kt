@@ -358,13 +358,12 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     }
     for (line in File(inputName).readLines()) {
         if (line.trim().isEmpty()) {
-            if (stackForParagraph.isEmpty()) continue
-            else {
+            if (!stackForParagraph.isEmpty()) {
                 stackForParagraph.removeLast()
                 writer.write("</p>")
                 writer.newLine()
-                continue
             }
+            continue
         } else if (stackForParagraph.isEmpty()) {
             writer.write("<p>")
             writer.newLine()
@@ -655,7 +654,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         var digit = "-" + (rhv * numeric).toString()
         if (i == 0) {
             var number = if (digit == "-0") lhv.toString() else lhv.toString().substring(0, digit.length - 1)
-            if (number.toInt() < -digit.toInt()) number += lhv.toString()[digit.length - 2]
+            if (number.toInt() < -digit.toInt()) number += lhv.toString()[digit.length - 1]
             remainder = if (digit == "-0") number else (number.toInt() + digit.toInt()).toString()
             index = number.length - 1
             dividend = if (number.length == digit.length || number.length > digit.length) "$lhv" else " $lhv"
