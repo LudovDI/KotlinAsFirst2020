@@ -652,16 +652,19 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     var dividend = ""
     for (i in result.indices) {
         val numeric = result[i].toString().toInt()
-        val digit = "-" + (rhv * numeric).toString()
+        var digit = "-" + (rhv * numeric).toString()
         if (i == 0) {
-            var number = lhv.toString().substring(0, digit.length - 1)
+            var number = if (digit == "-0") lhv.toString() else lhv.toString().substring(0, digit.length - 1)
             if (number.toInt() < -digit.toInt()) number += lhv.toString()[digit.length - 2]
-            remainder = if (digit == "-0") lhv.toString() else (number.toInt() + digit.toInt()).toString()
+            remainder = if (digit == "-0") number else (number.toInt() + digit.toInt()).toString()
             index = number.length - 1
-            dividend = if (number.length == digit.length) "$lhv" else " $lhv"
+            dividend = if (number.length == digit.length || number.length > digit.length) "$lhv" else " $lhv"
             writer.write("$dividend | $rhv")
             writer.newLine()
-            val private = result.padStart(result.length + dividend.length - digit.length + 3)
+            val private =
+                if (digit == "-0") result.padStart(result.length + 3)
+                else result.padStart(result.length + dividend.length - digit.length + 3)
+            digit = digit.padStart(remainder.length)
             writer.write("$digit$private")
             writer.newLine()
 
