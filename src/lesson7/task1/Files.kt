@@ -386,32 +386,21 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                 '*' ->
                     if (lastLetter != '*') {
                         when (list[index]) {
-                            1 -> when {
-                                stack.isEmpty() -> {
-                                    stack.addLast("<i>")
-                                    writer.write("<i>")
-                                }
-                                stack.last() == "<i>" -> {
-                                    stack.removeLast()
-                                    writer.write("</i>")
-                                }
-                                else -> {
-                                    stack.addLast("<i>")
-                                    writer.write("<i>")
-                                }
-                            }
-                            2 -> when {
-                                stack.isEmpty() -> {
-                                    stack.addLast("<b>")
-                                    writer.write("<b>")
-                                }
-                                stack.last() == "<b>" -> {
-                                    stack.removeLast()
-                                    writer.write("</b>")
-                                }
-                                else -> {
-                                    stack.addLast("<b>")
-                                    writer.write("<b>")
+                            in 1..2 -> {
+                                val letter = if (list[index] == 1) 'i' else 'b'
+                                when {
+                                    stack.isEmpty() -> {
+                                        stack.addLast("<$letter>")
+                                        writer.write("<$letter>")
+                                    }
+                                    stack.last() == "<$letter>" -> {
+                                        stack.removeLast()
+                                        writer.write("</$letter>")
+                                    }
+                                    else -> {
+                                        stack.addLast("<$letter>")
+                                        writer.write("<$letter>")
+                                    }
                                 }
                             }
                             3 -> when {
