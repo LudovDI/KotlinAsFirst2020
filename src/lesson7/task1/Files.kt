@@ -3,7 +3,6 @@
 package lesson7.task1
 
 import java.io.File
-import java.util.Stack
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -383,31 +382,17 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         index = 0
         for (char in line) {
             when (char) {
-                '*' ->
-                    if (lastLetter != '*') {
+                '*', '~' -> {
+                    var letter = 's'
+                    var flag = true
+                    if (list.isNotEmpty() && lastLetter != '*' && char == '*') {
                         when (list[index]) {
-                            in 1..2 -> {
-                                val letter = if (list[index] == 1) 'i' else 'b'
-                                when {
-                                    stack.isEmpty() -> {
-                                        stack.addLast("<$letter>")
-                                        writer.write("<$letter>")
-                                    }
-                                    stack.last() == "<$letter>" -> {
-                                        stack.removeLast()
-                                        writer.write("</$letter>")
-                                    }
-                                    else -> {
-                                        stack.addLast("<$letter>")
-                                        writer.write("<$letter>")
-                                    }
-                                }
-                            }
                             3 -> when {
                                 stack.isEmpty() -> {
                                     stack.addLast("<b>")
                                     stack.addLast("<i>")
                                     writer.write("<b><i>")
+                                    flag = false
                                 }
                                 stack.last() == "<b>" -> {
                                     stack.removeLast()
@@ -418,6 +403,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                                         writer.write("</b></i>")
                                         stack.removeLast()
                                     }
+                                    flag = false
                                 }
                                 else -> {
                                     stack.removeLast()
@@ -428,25 +414,28 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                                         writer.write("</i></b>")
                                         stack.removeLast()
                                     }
+                                    flag = false
                                 }
                             }
-                            else -> throw Exception("Please write neatly and legibly")
+                            else -> letter = if (list[index] == 1) 'i' else 'b'
                         }
                         index++
                     }
-                '~' -> if (lastLetter == '~') when {
-                    stack.isEmpty() -> {
-                        stack.addLast("<s>")
-                        writer.write("<s>")
-                    }
-                    stack.last() == "<s>" -> {
-                        stack.removeLast()
-                        writer.write("</s>")
-                    }
-                    else -> {
-                        stack.addLast("<s>")
-                        writer.write("<s>")
-                    }
+                    if ((lastLetter != '*' && char == '*' || lastLetter == '~' && char == '~') && flag)
+                        when {
+                            stack.isEmpty() -> {
+                                stack.addLast("<$letter>")
+                                writer.write("<$letter>")
+                            }
+                            stack.last() == "<$letter>" -> {
+                                stack.removeLast()
+                                writer.write("</$letter>")
+                            }
+                            else -> {
+                                stack.addLast("<$letter>")
+                                writer.write("<$letter>")
+                            }
+                        }
                 }
                 else -> writer.write(char.toString())
             }
